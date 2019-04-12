@@ -2,12 +2,11 @@ import { Application, GUI, moment } from "Dashboard";
 import { Component } from 'react'
 import { ComponentButton, CustomWrapper } from './style'
 
-
 class Notification extends Application {  // Ska vi göra detta? (Hur annars få tillgång till this.send)
     
     remind(minutes){
         const { item } = this.props;
-        item.reminder = moment().add(minutes,'minutes');
+        item.reminder = moment().add(minutes, 'minutes');
         this.saveItem(item);
     }
 
