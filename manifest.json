@@ -1,0 +1,13 @@
+{
+    "bundle": "se.infomaker.todo",
+    "name": "Todo",
+    "description": "Todo-list for Infomaker Dashboard",
+    "author": {
+        "name": "Patric Tysk",
+        "email": "patric.tysk@infomaker.se",
+        "organization": "Infomaker Scandinavia AB",
+        "website": "www.infomaker.io"
+    },
+    "version": "1.0.0",
+    "wiki_url": "https://github.com/Infomaker/Dashboard-Plugin/wiki"
+}
