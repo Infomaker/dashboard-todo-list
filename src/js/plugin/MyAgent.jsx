@@ -102,8 +102,8 @@ export default class MyAgent extends Agent {
                 list.items.forEach(item => {
                     if (item.reminder && moment(item.reminder) <= moment()) {
                         const notificationId = createUUID();
-
                         this.DNA.add({
+                            title: `${list.name} - ${item.text}`,
                             uid: notificationId,
                             level: 'info',
                             autoDismiss: 59,

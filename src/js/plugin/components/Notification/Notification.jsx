@@ -1,5 +1,7 @@
 import { Application, GUI, moment } from "Dashboard";
 import { Component } from 'react'
+import { ComponentButton, CustomWrapper } from './style'
+
 
 class Notification extends Application {  // Ska vi göra detta? (Hur annars få tillgång till this.send)
     
@@ -29,34 +31,35 @@ class Notification extends Application {  // Ska vi göra detta? (Hur annars få
     render() {
         const { item } = this.props;
         return (
-            <GUI.Wrapper>
+            <CustomWrapper>
                 {item.text}
                 <div>
                     <p>Remind me:</p>
-                    <GUI.Button
+                    <ComponentButton
                         text={"in five minutes"}
                         size={"large"}
                         onClick={() => this.remind(5)}
                     />
-                    <GUI.Button
+                    <ComponentButton
                         text={"in an hour"}
                         size={"large"}
                         onClick={() => this.remind(60)}
                     />
-                    <GUI.Button
+                    <ComponentButton
                         text={"tomorrow"}
                         size={"large"}
                         onClick={() => this.remind(1440)}
                     />
                 </div>
+
                 <div>
-                    <GUI.Button
+                    <ComponentButton
                         text={"Dismiss"}
                         size={"large"}
                         onClick={() => this.dismiss()}
                     />
                 </div>
-            </GUI.Wrapper>
+            </CustomWrapper>
         )
     }
 }
