@@ -1,24 +1,34 @@
-import { GUI } from "Dashboard";
+import { Application, GUI, moment } from "Dashboard";
 import { Component } from 'react'
 
-class Notification extends Component {
+class Notification extends Application {  // Ska vi göra detta? (Hur annars få tillgång till this.send)
     
     remind(minutes){
         const { item } = this.props;
-        item.reminder = item.reminder.add(minutes,'minutes');
-        console.log(item);
+        item.reminder = moment().add(minutes,'minutes');
+        this.saveItem(item);
     }
 
     dismiss() {
         const { item } = this.props;
-        console.log(item);
         item.reminder = null;
-        console.log(item);
+        this.saveItem(item);
+    }
+
+    saveItem(item) {
+        const { applicationId, notificationId } = this.props;
+        this.send("@plugin_bundle:setItem", {
+            applicationId: applicationId,
+            item: item
+        });
+        this.send("@plugin_bundle:closeNotification", {
+            notificationId: notificationId
+        })
     }
     
     render() {
+        console.log('this :', this);
         const { item } = this.props;
-        console.log("Item in notification", item);
         return (
             <GUI.Wrapper>
                 {item.text}

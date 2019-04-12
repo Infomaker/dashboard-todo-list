@@ -3,13 +3,14 @@
  * Read more about Agent (https://github.com/Infomaker/Dashboard-Plugin/wiki/Agent)
  */
 
-import { Agent } from "Dashboard";
+import { Agent, moment, createUUID } from "Dashboard";
+import Notification from "./components/Notification";
 
 export default class MyAgent extends Agent {
     constructor(props) {
         super(props);
 
-        this.dataStore = "@plugin_bundle-dataStore-5";
+        this.dataStore = "@plugin_bundle-dataStore";
 
         this.on("@plugin_bundle:getLists", data => {
             if (!data.callback) return;
@@ -43,22 +44,74 @@ export default class MyAgent extends Agent {
 
         this.on("@plugin_bundle:setItem", data => {
             if (!data.applicationId) return;
-
             this.getLists().then(storedData => {
                 storedData.forEach(list => {
                     if (list.applicationId === data.applicationId) {
-                        list.items.forEach(item => {
-                            if (item.id === data.item.id) {
-                                item = data.item; // kan vi ha en break här?
-                            }
-                        });
+
+                        const itemIndex = list.items.findIndex(x => x.id === data.item.id);
+                        if (itemIndex >= 0 ) {
+                            list.items[itemIndex] = data.item;
+                        }
                     }
                 });
                 this.setLists(storedData).then(success => {
                     if (success) {
-                        this.send("@plugin_bundle:updatedLists", data);
+                        this.send("@plugin_bundle:updatedLists", storedData);
                     } else {
                         console.error("Error: Could not update lists in store", success);
+                    }
+                });
+            });
+        });
+
+        this.on("@plugin_bundle:closeNotification", data => {
+            if (!data.notificationId) return;
+            this.DNA.remove({
+                uid: data.notificationId
+            })
+        });
+
+        // Build your Notification handler once and use it in all your plugin's components
+        const DNA_BUNDLE = 'se.infomaker.DNA-Agent';
+        const DNA_GET_LIB = `${DNA_BUNDLE}:getDNALib`;
+        const DNA_LIB = `${DNA_BUNDLE}:DNALib`;
+
+        this.DNA = undefined;
+
+        this.ready(DNA_BUNDLE, () => {
+            this.on(DNA_LIB, userData => {
+                let _dna = userData.DNA
+                this.DNA = new _dna()
+            })
+            this.send(DNA_GET_LIB, {});
+        })
+
+        this.setInterval(() => this.sendNotifications(), 60000)
+        this.sendNotifications()
+    }
+
+    sendNotifications() {
+        this.getLists().then(storedData => {
+            console.log('storedData :', storedData);
+            storedData.forEach(list => {
+                list.items.forEach(item => {
+                    if (item.reminder && moment(item.reminder) <= moment()) {
+
+                        console.log('send notification item :', item);
+
+                        const notificationId = createUUID();
+
+                        this.DNA.add({
+                            uid: notificationId,
+                            level: 'info',
+                            autoDismiss: 59,
+                            message:
+                                <Notification
+                                    applicationId={list.applicationId}
+                                    notificationId={notificationId}
+                                    item={item}
+                                />
+                        })
                     }
                 });
             });
@@ -93,4 +146,28 @@ export default class MyAgent extends Agent {
             resolve(this.store(this.dataStore, lists));
         });
     }
+
+    // if (reminder) {
+
+    //     this.DNA.confirm({
+    //         uid: createUUID,
+    //         level: 'info',
+    //         confirm: {
+    //             message: <Notification applicationId={this.applicationI} item={item} />
+    //         }
+
+
+    // <div>
+    //     My custom notification!
+    //     <button onClick={event => {
+    //         event.stopPropagation()
+
+    //         console.log('Clicked')
+    //     }}>
+    //         Click me!
+    //     </button>
+    // </div>
+
+    //     })
+    // }
 }

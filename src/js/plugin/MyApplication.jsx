@@ -5,7 +5,6 @@
 
 import { Application, GUI, createUUID, moment } from "Dashboard";
 import React from "React";
-import Notification from "./components/Notification";
 
 const Fragment = React.Fragment;
 
@@ -22,19 +21,20 @@ export default class MyApplication extends Application {
 
         this.applicationId = props.id;
         this.displayName = props.config.pluginTitle || "Todo";
-
-        this.on("@plugin_bundle:updatedLists", data => {
-            if (data.applicationId === this.applicationId) {
-                this.setState({
-                    items: data.items
-                });
-            }
-        });
     }
 
     componentDidMount() {
         this.ready("@plugin_bundle-agent", () => {
             this.getItems();
+        });
+
+        this.on("@plugin_bundle:updatedLists", data => {
+            console.log('data in updatedlists :', data);
+            if (data.applicationId === this.applicationId) {
+                this.setState({
+                    items: data.items
+                });
+            }
         });
     }
 
@@ -64,28 +64,6 @@ export default class MyApplication extends Application {
         }
 
         const { items, reminder } = this.state;
-      
-        if (reminder) {
-            // Build your Notification handler once and use it in all your plugin's components
-            const DNA_BUNDLE = 'se.infomaker.DNA-Agent'
-            const DNA_GET_LIB = `${DNA_BUNDLE}:getDNALib`
-            const DNA_LIB = `${DNA_BUNDLE}:DNALib`
-
-            this.DNA = undefined
-
-            this.ready(DNA_BUNDLE, () => {
-                this.on(DNA_LIB, userData => {
-                    let _dna = userData.DNA
-
-                    this.DNA = new _dna()
-                })
-                this.DNA.send({
-                    uid: 503392020-32434-324234-434-34344,
-                    level: 'success',
-                    message: 'Your message',
-                })
-            })
-        }
 
         const item = {
             id: createUUID(),
@@ -94,13 +72,13 @@ export default class MyApplication extends Application {
             reminder: reminder
         };
 
+        console.log('item.reminder <= moment() :', item.reminder <= moment());
+
         this.setLists([item, ...items]);
 
         this.setState({
             current: ""
         });
-
-        console.log("Item:", item);
     }
 
     removeItem(itemToRemove) {
@@ -145,19 +123,19 @@ export default class MyApplication extends Application {
         const { items } = this.state;
 
         const notDoneItems = items
-      .filter(item => !item.done)
-      .map(item => {
-          return {
-              id: item.id,
-              content: (
-            <React.Fragment>
-              <GUI.Paragraph text={item.text} />
-              <GUI.Button text={"Done"} onClick={() => this.changeDoneItem(item, true)} />
-              <GUI.Button text={"Delete"} onClick={() => this.removeItem(item)} />
-            </React.Fragment>
-          )
-          };
-      });
+            .filter(item => !item.done)
+            .map(item => {
+                return {
+                    id: item.id,
+                    content: (
+                        <React.Fragment>
+                            <GUI.Paragraph text={item.text} />
+                            <GUI.Button text={"Done"} onClick={() => this.changeDoneItem(item, true)} />
+                            <GUI.Button text={"Delete"} onClick={() => this.removeItem(item)} />
+                        </React.Fragment>
+                    )
+                };
+            });
 
         return <GUI.List before={<GUI.Heading level={"2"} text={"Things to do:"} />} items={notDoneItems} />;
     }
@@ -166,80 +144,74 @@ export default class MyApplication extends Application {
         const { items, showAll } = this.state;
 
         const doneItems = items
-      .filter(item => item.done)
-      .map(item => {
-          return {
-              id: item.id,
-              content: (
-            <Fragment>
-              <GUI.Paragraph className={"strike-through"} text={item.text} />
-              <GUI.Button text={"Undo"} onClick={() => this.changeDoneItem(item, false)} />
-              <GUI.Button text={"Delete"} onClick={() => this.removeItem(item)} />
-            </Fragment>
-          )
-          };
-      });
+            .filter(item => item.done)
+            .map(item => {
+                return {
+                    id: item.id,
+                    content: (
+                        <Fragment>
+                            <GUI.Paragraph className={"strike-through"} text={item.text} />
+                            <GUI.Button text={"Undo"} onClick={() => this.changeDoneItem(item, false)} />
+                            <GUI.Button text={"Delete"} onClick={() => this.removeItem(item)} />
+                        </Fragment>
+                    )
+                };
+            });
 
         return (
-      <Fragment>
-        {doneItems.length > 0 && (
-          <GUI.Checkbox
-            label={"Show done items"}
-            checked={showAll}
-            onChange={checked =>
-              this.setState({
-                  showAll: checked
-              })
-            }
-          />
-        )}
-        <br />
-        {showAll && <GUI.List before={<GUI.Heading level={"2"} text={"Things you have done:"} />} items={doneItems} />}
-      </Fragment>
+            <Fragment>
+                {doneItems.length > 0 && (
+                    <GUI.Checkbox
+                        label={"Show done items"}
+                        checked={showAll}
+                        onChange={checked =>
+                            this.setState({
+                                showAll: checked
+                            })
+                        }
+                    />
+                )}
+                <br />
+                {showAll && <GUI.List before={<GUI.Heading level={"2"} text={"Things you have done:"} />} items={doneItems} />}
+            </Fragment>
         );
     }
 
     render() {
-        const { current, items } = this.state;
-
-        const item = items[0];
-
-        console.log("Testitem:", item);
+        const { current } = this.state;
 
         return (
-      // Use @plugin_bundle_class and the bundle in the manifest will be used as your class
-      <GUI.Wrapper className={"@plugin_bundle_class"}>
-        {item && <Notification applicationId={this.applicationI} item={item} />}
-
-        <GUI.Title text={this.displayName} />
-        <br />
-        <div>
-          <GUI.Heading level={"2"} text={"Add new reminder:"} />
-          <GUI.Input
-            value={current}
-            placeholder={"What todo?"}
-            onChange={value => this.setState({ current: value })}
-            onEnter={value => this.addItem(value)}
-          />
-          <GUI.Button text={"Add"} size={"large"} onClick={() => this.addItem(current)} />
-        </div>
-        <GUI.DatePicker // Tiden verkar inte vara lokaliserad, vi får skicka in tidsformat. Tiden visas inte i inputen. Rubriken över tiden är inte lokaliserad. Clearknappen hamnar fel. Label verkar inte renderas.
-          label={"Add reminder (optional)"}
-          onChange={value => this.setReminder(value)}
-          showTimeSelect
-          timeFormat={"HH:mm"}
-          minDate={moment()}
-          maxDate={moment().add("2", "years")}
-          showDisabledMonthNavigation
-          isClearable={true}
-          selected={""}
-          placeholderText={"Add reminder (optional)"}
-        />
-        <br />
-        <br />
-        {this.renderNotDoneItems()}
-        {this.renderDoneItems()}
-      </GUI.Wrapper>
-    );
+            // Use @plugin_bundle_class and the bundle in the manifest will be used as your class
+            <GUI.Wrapper className={"@plugin_bundle_class"}>
+                <GUI.Title text={this.displayName} />
+                <br />
+                <div>
+                    <GUI.Heading level={"2"} text={"Add new reminder:"} />
+                    <GUI.Input
+                        value={current}
+                        placeholder={"What todo?"}
+                        onChange={value => this.setState({ current: value })}
+                        onEnter={value => this.addItem(value)}
+                    />
+                    <GUI.Button text={"Add"} size={"large"} onClick={() => this.addItem(current)} />
+                </div>
+                <GUI.DatePicker // Tiden verkar inte vara lokaliserad, vi får skicka in tidsformat. Tiden visas inte i inputen. Rubriken över tiden är inte lokaliserad. Clearknappen hamnar fel. Label verkar inte renderas.
+                    label={"Add reminder (optional)"}
+                    onChange={value => this.setReminder(value)}
+                    showTimeSelect
+                    timeFormat={"HH:mm"}
+                    minDate={moment()}
+                    maxDate={moment().add("2", "years")}
+                    showDisabledMonthNavigation
+                    isClearable={true}
+                    selected={""}
+                    placeholderText={"Add reminder (optional)"}
+                />
+                <br />
+                <br />
+                {this.renderNotDoneItems()}
+                {this.renderDoneItems()}
+            </GUI.Wrapper>
+        );
     }
 }
