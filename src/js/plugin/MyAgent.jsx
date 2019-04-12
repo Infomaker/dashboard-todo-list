@@ -11,10 +11,34 @@ export default class MyAgent extends Agent {
         super(props);
 
         this.dataStore = "@plugin_bundle-dataStore";
+        this.DNA = undefined;
 
+        this.setupEvents();
+        this.setupDNA();
+
+        this.setInterval(() => this.sendNotifications(), 60000)
+        this.sendNotifications()
+    }
+
+    setupDNA() {
+        // Build your Notification handler once and use it in all your plugin's components
+        const DNA_BUNDLE = 'se.infomaker.DNA-Agent';
+        const DNA_GET_LIB = `${DNA_BUNDLE}:getDNALib`;
+        const DNA_LIB = `${DNA_BUNDLE}:DNALib`;
+        
+        this.ready(DNA_BUNDLE, () => {
+            this.on(DNA_LIB, userData => {
+                let _dna = userData.DNA;
+                this.DNA = new _dna();
+            });
+            this.send(DNA_GET_LIB, {});
+        });
+    }
+
+    setupEvents() {
         this.on("@plugin_bundle:getLists", data => {
-            if (!data.callback) return;
-
+            if (!data.callback)
+                return;
             this.getLists(data.applicationId, data.name).then(result => {
                 if (data.applicationId) {
                     result = result.filter(item => item.applicationId === data.applicationId);
@@ -22,10 +46,9 @@ export default class MyAgent extends Agent {
                 data.callback(result);
             });
         });
-
         this.on("@plugin_bundle:setLists", data => {
-            if (!data.applicationId) return;
-
+            if (!data.applicationId)
+                return;
             this.getLists().then(storedData => {
                 storedData.forEach(item => {
                     if (item.applicationId === data.applicationId) {
@@ -35,21 +58,21 @@ export default class MyAgent extends Agent {
                 this.setLists(storedData).then(success => {
                     if (success) {
                         this.send("@plugin_bundle:updatedLists", data);
-                    } else {
+                    }
+                    else {
                         console.error("Error: Could not update lists in store", success);
                     }
                 });
             });
         });
-
         this.on("@plugin_bundle:setItem", data => {
-            if (!data.applicationId) return;
+            if (!data.applicationId)
+                return;
             this.getLists().then(storedData => {
                 storedData.forEach(list => {
                     if (list.applicationId === data.applicationId) {
-
                         const itemIndex = list.items.findIndex(x => x.id === data.item.id);
-                        if (itemIndex >= 0 ) {
+                        if (itemIndex >= 0) {
                             list.items[itemIndex] = data.item;
                         }
                     }
@@ -57,48 +80,27 @@ export default class MyAgent extends Agent {
                 this.setLists(storedData).then(success => {
                     if (success) {
                         this.send("@plugin_bundle:updatedLists", storedData);
-                    } else {
+                    }
+                    else {
                         console.error("Error: Could not update lists in store", success);
                     }
                 });
             });
         });
-
         this.on("@plugin_bundle:closeNotification", data => {
-            if (!data.notificationId) return;
+            if (!data.notificationId)
+                return;
             this.DNA.remove({
                 uid: data.notificationId
-            })
+            });
         });
-
-        // Build your Notification handler once and use it in all your plugin's components
-        const DNA_BUNDLE = 'se.infomaker.DNA-Agent';
-        const DNA_GET_LIB = `${DNA_BUNDLE}:getDNALib`;
-        const DNA_LIB = `${DNA_BUNDLE}:DNALib`;
-
-        this.DNA = undefined;
-
-        this.ready(DNA_BUNDLE, () => {
-            this.on(DNA_LIB, userData => {
-                let _dna = userData.DNA
-                this.DNA = new _dna()
-            })
-            this.send(DNA_GET_LIB, {});
-        })
-
-        this.setInterval(() => this.sendNotifications(), 60000)
-        this.sendNotifications()
     }
 
     sendNotifications() {
         this.getLists().then(storedData => {
-            console.log('storedData :', storedData);
             storedData.forEach(list => {
                 list.items.forEach(item => {
                     if (item.reminder && moment(item.reminder) <= moment()) {
-
-                        console.log('send notification item :', item);
-
                         const notificationId = createUUID();
 
                         this.DNA.add({
@@ -146,28 +148,4 @@ export default class MyAgent extends Agent {
             resolve(this.store(this.dataStore, lists));
         });
     }
-
-    // if (reminder) {
-
-    //     this.DNA.confirm({
-    //         uid: createUUID,
-    //         level: 'info',
-    //         confirm: {
-    //             message: <Notification applicationId={this.applicationI} item={item} />
-    //         }
-
-
-    // <div>
-    //     My custom notification!
-    //     <button onClick={event => {
-    //         event.stopPropagation()
-
-    //         console.log('Clicked')
-    //     }}>
-    //         Click me!
-    //     </button>
-    // </div>
-
-    //     })
-    // }
 }

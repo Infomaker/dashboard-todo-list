@@ -29,7 +29,6 @@ export default class MyApplication extends Application {
         });
 
         this.on("@plugin_bundle:updatedLists", data => {
-            console.log('data in updatedlists :', data);
             if (data.applicationId === this.applicationId) {
                 this.setState({
                     items: data.items
@@ -71,9 +70,7 @@ export default class MyApplication extends Application {
             done: false,
             reminder: reminder
         };
-
-        console.log('item.reminder <= moment() :', item.reminder <= moment());
-
+        
         this.setLists([item, ...items]);
 
         this.setState({

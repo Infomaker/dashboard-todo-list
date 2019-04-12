@@ -27,7 +27,6 @@ class Notification extends Application {  // Ska vi göra detta? (Hur annars få
     }
     
     render() {
-        console.log('this :', this);
         const { item } = this.props;
         return (
             <GUI.Wrapper>
@@ -57,9 +56,7 @@ class Notification extends Application {  // Ska vi göra detta? (Hur annars få
                         onClick={() => this.dismiss()}
                     />
                 </div>
-                
             </GUI.Wrapper>
-            
         )
     }
 }
