@@ -100,7 +100,7 @@ export default class MyAgent extends Agent {
         this.getLists().then(storedData => {
             storedData.forEach(list => {
                 list.items.forEach(item => {
-                    if (item.reminder && moment(item.reminder) <= moment()) {
+                    if (item.reminder && !item.done && moment(item.reminder) <= moment()) {
                         const notificationId = createUUID();
                         this.DNA.add({
                             title: `${list.name} - ${item.text}`,

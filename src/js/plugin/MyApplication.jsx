@@ -5,6 +5,9 @@
 
 import { Application, GUI, createUUID, moment } from "Dashboard";
 import React from "React";
+import { DatePickerWithClearButton } from './components/DatePicker/style'
+import { Icon } from './components/Icon/style'
+import { List } from './components/List/style'
 
 const Fragment = React.Fragment;
 
@@ -15,7 +18,7 @@ export default class MyApplication extends Application {
         this.state = {
             items: [],
             current: "",
-            reminder: null,
+            reminder: "",
             showAll: false
         };
 
@@ -74,7 +77,8 @@ export default class MyApplication extends Application {
         this.setLists([item, ...items]);
 
         this.setState({
-            current: ""
+            current: "",
+            reminder: ""
         });
     }
 
@@ -122,19 +126,47 @@ export default class MyApplication extends Application {
         const notDoneItems = items
             .filter(item => !item.done)
             .map(item => {
+                const date = moment(item.reminder).format("YYYY-MM-DD HH:mm");
                 return {
                     id: item.id,
                     content: (
                         <React.Fragment>
-                            <GUI.Paragraph text={item.text} />
-                            <GUI.Button text={"Done"} onClick={() => this.changeDoneItem(item, true)} />
-                            <GUI.Button text={"Delete"} onClick={() => this.removeItem(item)} />
+                           
+                            <GUI.Paragraph>
+                                {item.text}
+                            </GUI.Paragraph>
+                            
+                            <GUI.Button
+                                text={"Done"} 
+                                size={"large"} 
+                                onClick={() => this.changeDoneItem(item, true)}
+                            />
+                            <GUI.Button 
+                                text={"Delete"}
+                                size={"large"} 
+                                onClick={() => this.removeItem(item)}
+                            />
+                            {item.reminder &&
+                                <Icon 
+                                    iconClass="alarm" 
+                                    iconColor={"#424242"} 
+                                    text={date}
+                                />
+                            }
                         </React.Fragment>
                     )
                 };
             });
 
-        return <GUI.List before={<GUI.Heading level={"2"} text={"Things to do:"} />} items={notDoneItems} />;
+        return <List 
+                    before={
+                        <GUI.Heading 
+                            level={"2"} 
+                            text={"Things to do:"} 
+                        />
+                    } 
+                    items={notDoneItems} 
+                />;
     }
 
     renderDoneItems() {
@@ -147,9 +179,20 @@ export default class MyApplication extends Application {
                     id: item.id,
                     content: (
                         <Fragment>
-                            <GUI.Paragraph className={"strike-through"} text={item.text} />
-                            <GUI.Button text={"Undo"} onClick={() => this.changeDoneItem(item, false)} />
-                            <GUI.Button text={"Delete"} onClick={() => this.removeItem(item)} />
+                            <GUI.Paragraph
+                                className={"strike-through"}
+                                text={item.text} 
+                            />
+                            <GUI.Button
+                                text={"Undo"}
+                                size={"large"}
+                                onClick={() => this.changeDoneItem(item, false)}
+                            />
+                            <GUI.Button 
+                                text={"Delete"}
+                                size={"large"}
+                                onClick={() => this.removeItem(item)}
+                            />
                         </Fragment>
                     )
                 };
@@ -169,31 +212,38 @@ export default class MyApplication extends Application {
                     />
                 )}
                 <br />
-                {showAll && <GUI.List before={<GUI.Heading level={"2"} text={"Things you have done:"} />} items={doneItems} />}
+                {showAll && 
+                    <List
+                        before={
+                            <GUI.Heading
+                                level={"2"} 
+                                text={"Things you have done:"} 
+                            />
+                        }
+                        items={doneItems}
+                    />
+                }
             </Fragment>
         );
     }
 
     render() {
-        const { current } = this.state;
+        const { current, reminder } = this.state;
 
         return (
             // Use @plugin_bundle_class and the bundle in the manifest will be used as your class
-            <GUI.Wrapper className={"@plugin_bundle_class"}>
-                <GUI.Title text={this.displayName} />
-                <br />
-                <div>
-                    <GUI.Heading level={"2"} text={"Add new reminder:"} />
-                    <GUI.Input
-                        value={current}
-                        placeholder={"What todo?"}
-                        onChange={value => this.setState({ current: value })}
-                        onEnter={value => this.addItem(value)}
-                    />
-                    <GUI.Button text={"Add"} size={"large"} onClick={() => this.addItem(current)} />
-                </div>
-                <GUI.DatePicker // Tiden verkar inte vara lokaliserad, vi får skicka in tidsformat. Tiden visas inte i inputen. Rubriken över tiden är inte lokaliserad. Clearknappen hamnar fel. Label verkar inte renderas.
-                    label={"Add reminder (optional)"}
+            <GUI.Wrapper
+                className={"@plugin_bundle_class"}>
+                <GUI.Title
+                    text={this.displayName}
+                />
+                <GUI.Input
+                    value={current}
+                    placeholder={"What todo?"}
+                    onChange={value => this.setState({ current: value })}
+                    onEnter={value => this.addItem(value)}
+                />
+                <DatePickerWithClearButton // Tiden verkar inte vara lokaliserad, vi får skicka in tidsformat. Tiden visas inte i inputen. Rubriken över tiden är inte lokaliserad. Clearknappen hamnar fel. Label verkar inte renderas.
                     onChange={value => this.setReminder(value)}
                     showTimeSelect
                     timeFormat={"HH:mm"}
@@ -201,11 +251,15 @@ export default class MyApplication extends Application {
                     maxDate={moment().add("2", "years")}
                     showDisabledMonthNavigation
                     isClearable={true}
-                    selected={""}
-                    placeholderText={"Add reminder (optional)"}
+                    value={reminder}
+                    dateFormat={"YYYY-MM-DD HH:mm"}
+                    placeholderText={"Remind me (optional)"}
                 />
-                <br />
-                <br />
+                <GUI.Button 
+                    text={"Add"}
+                    size={"large"}
+                    onClick={() => this.addItem(current)}
+                />
                 {this.renderNotDoneItems()}
                 {this.renderDoneItems()}
             </GUI.Wrapper>
