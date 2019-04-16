@@ -6,8 +6,11 @@ const CustomWrapper = styled(GUI.Wrapper)`
 `
 
 const ComponentButton = styled(GUI.Button)`
-    margin-right: 50px;
-    margin-top:20px;
+    width: 45%;
+    margin-bottom: 10px;
+    button {
+        width: 100%;
+    }
 `
 
 export {

@@ -3,7 +3,3 @@
 	border: 1px solid #eee;
 }
 
-.@plugin_bundle_class-application .strike-through,
-.@plugin_bundle_class-widget .strike-through {
-	text-decoration: line-through;
-}

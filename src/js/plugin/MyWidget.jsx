@@ -3,7 +3,9 @@
  * Read more about Widget (https://github.com/Infomaker/Dashboard-Plugin/wiki/Widget)
  */
 
-import { Widget, GUI, createUUID } from "Dashboard";
+import { Widget, createUUID } from "Dashboard";
+import { WidgetList } from './components/List/style'
+import { WidgetCheckbox } from './components/Checkbox/style'
 
 export default class MyWidget extends Widget {
     constructor(props) {
@@ -48,7 +50,7 @@ export default class MyWidget extends Widget {
     }
 
     saveItem(changedItem, done, applicationId) {
-        const { lists } = this.state; // destructuring always const?
+        const { lists } = this.state; 
         
         let newLists = lists;
         newLists.forEach((list) => {
@@ -58,6 +60,7 @@ export default class MyWidget extends Widget {
                         item.done = done;
                         this.send('@plugin_bundle:setLists', {
                             applicationId: applicationId,
+                            name: list.name,
                             items: list.items
                         });
                     }
@@ -78,8 +81,8 @@ export default class MyWidget extends Widget {
                 return {
                     id: item.id,
                     content: (
-                        <GUI.Checkbox
-                            className={item.done ? 'strike-through': ''}
+                        <WidgetCheckbox   // Är detta rätt sätt? Med klassnamn och hur man ändrar ett 'state' med styled components
+                            className={item.done ? 'se-infomaker-gui-checkbox--strike-through': ''}
                             label={item.text}
                             checked={item.done}
                             onChange={checked => this.saveItem(item, checked, list.applicationId)}
@@ -99,12 +102,9 @@ export default class MyWidget extends Widget {
         })
         
         return (
-            <React.Fragment>
-                <h2>Här hittar du det du borde göra!</h2>
-                <GUI.List
-                    items={listItems}
-                />
-            </React.Fragment>
+            <WidgetList
+                items={listItems}
+            />
         )
     }
 }
