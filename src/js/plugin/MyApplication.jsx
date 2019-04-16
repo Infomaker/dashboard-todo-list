@@ -192,7 +192,8 @@ export default class MyApplication extends Application {
                     content: (
                         <Fragment>
                             <Paragraph
-                                className={"se-infomaker-gui-paragraph--strike-through"}
+                                strikeThrough={true}
+                                // className={"se-infomaker-gui-paragraph--strike-through"}
                                 text={item.text} 
                             />
                             <GUI.Button
