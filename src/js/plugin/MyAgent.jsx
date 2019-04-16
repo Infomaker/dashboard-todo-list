@@ -49,15 +49,19 @@ export default class MyAgent extends Agent {
         this.on("@plugin_bundle:setLists", data => {
             if (!data.applicationId)
                 return;
+
+            let updatedList;
             this.getLists().then(storedData => {
-                storedData.forEach(item => {
-                    if (item.applicationId === data.applicationId) {
-                        item.items = data.items;
+                storedData.forEach(list => {
+                    if (list.applicationId === data.applicationId) {
+                        list.name = data.name;
+                        list.items = data.items;
+                        updatedList = list;
                     }
                 });
                 this.setLists(storedData).then(success => {
-                    if (success) {
-                        this.send("@plugin_bundle:updatedLists", data);
+                    if (success && updatedList) {
+                        this.send("@plugin_bundle:updatedLists", updatedList);
                     }
                     else {
                         console.error("Error: Could not update lists in store", success);
@@ -68,18 +72,21 @@ export default class MyAgent extends Agent {
         this.on("@plugin_bundle:setItem", data => {
             if (!data.applicationId)
                 return;
+
+            let updatedList;
             this.getLists().then(storedData => {
                 storedData.forEach(list => {
                     if (list.applicationId === data.applicationId) {
                         const itemIndex = list.items.findIndex(x => x.id === data.item.id);
                         if (itemIndex >= 0) {
                             list.items[itemIndex] = data.item;
+                            updatedList = list;
                         }
                     }
                 });
                 this.setLists(storedData).then(success => {
-                    if (success) {
-                        this.send("@plugin_bundle:updatedLists", storedData);
+                    if (success && updatedList) {
+                        this.send("@plugin_bundle:updatedLists", updatedList);
                     }
                     else {
                         console.error("Error: Could not update lists in store", success);

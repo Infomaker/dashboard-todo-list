@@ -5,9 +5,10 @@
 
 import { Application, GUI, createUUID, moment } from "Dashboard";
 import React from "React";
-import { DatePickerWithClearButton } from './components/DatePicker/style'
-import { Icon } from './components/Icon/style'
-import { List } from './components/List/style'
+import { DatePickerWithClearButton } from '@components/DatePicker/style'
+import { Icon } from '@components/Icon/style'
+import { List } from '@components/List/style'
+import { Paragraph } from '@components/Paragraph/style'
 
 const Fragment = React.Fragment;
 
@@ -32,6 +33,7 @@ export default class MyApplication extends Application {
         });
 
         this.on("@plugin_bundle:updatedLists", data => {
+            
             if (data.applicationId === this.applicationId) {
                 this.setState({
                     items: data.items
@@ -52,7 +54,7 @@ export default class MyApplication extends Application {
         });
     }
 
-    setLists(items) {
+    setItems(items) {
         this.send("@plugin_bundle:setLists", {
             applicationId: this.applicationId,
             name: this.displayName,
@@ -74,11 +76,20 @@ export default class MyApplication extends Application {
             reminder: reminder
         };
         
-        this.setLists([item, ...items]);
+        this.setItems([item, ...items]);
 
         this.setState({
             current: "",
             reminder: ""
+        });
+    }
+
+    setItem(item) {
+        if (!item) return;
+
+        this.send('@plugin_bundle:setItem', {
+            applicationId: this.applicationId,
+            item: item
         });
     }
 
@@ -93,31 +104,30 @@ export default class MyApplication extends Application {
             message: message,
             buttonTexts: ["Cancel", "Delete"],
             onConfirm: () => {
-                this.setLists(items.filter(item => item.id !== itemToRemove.id));
+                this.setItems(items.filter(item => item.id !== itemToRemove.id));
             }
         };
 
         this.confirm(myConfirmObject);
     }
 
-    changeDoneItem(itemToUndo, done) {
-        if (!itemToUndo) return;
+    changeDoneItem(item, done) {
+        if (!item) return;
 
-        const { items } = this.state;
-
-        let newItems = items;
-        newItems.forEach(item => {
-            if (item.id === itemToUndo.id) {
-                item.done = done;
-                this.setLists(newItems);
-            }
-        });
+        item.done = done;
+        this.setItem(item);
     }
 
-    setReminder(dateTime) {
-        this.setState({
-            reminder: dateTime
-        });
+    setReminder(dateTime, item = null) {
+        if (item === null) {
+            this.setState({
+                reminder: dateTime
+            });
+            return;
+        }
+        item.reminder = dateTime;
+        this.setItem(item);
+        
     }
 
     renderNotDoneItems() {
@@ -126,7 +136,8 @@ export default class MyApplication extends Application {
         const notDoneItems = items
             .filter(item => !item.done)
             .map(item => {
-                const date = moment(item.reminder).format("YYYY-MM-DD HH:mm");
+                const date = item.reminder ? moment(item.reminder).format("YYYY-MM-DD HH:mm") : '';
+
                 return {
                     id: item.id,
                     content: (
@@ -146,13 +157,14 @@ export default class MyApplication extends Application {
                                 size={"large"} 
                                 onClick={() => this.removeItem(item)}
                             />
-                            {item.reminder &&
-                                <Icon 
-                                    iconClass="alarm" 
-                                    iconColor={"#424242"} 
-                                    text={date}
-                                />
-                            }
+                            <Icon
+                                iconClass="alarm"
+                                iconColor={"#424242"}
+                            />
+                            <DatePickerWithClearButton
+                                onChangedValue={value => this.setReminder(value, item)}
+                                value={date}
+                            />
                         </React.Fragment>
                     )
                 };
@@ -179,8 +191,8 @@ export default class MyApplication extends Application {
                     id: item.id,
                     content: (
                         <Fragment>
-                            <GUI.Paragraph
-                                className={"strike-through"}
+                            <Paragraph
+                                className={"se-infomaker-gui-paragraph--strike-through"}
                                 text={item.text} 
                             />
                             <GUI.Button
@@ -243,17 +255,9 @@ export default class MyApplication extends Application {
                     onChange={value => this.setState({ current: value })}
                     onEnter={value => this.addItem(value)}
                 />
-                <DatePickerWithClearButton // Tiden verkar inte vara lokaliserad, vi får skicka in tidsformat. Tiden visas inte i inputen. Rubriken över tiden är inte lokaliserad. Clearknappen hamnar fel. Label verkar inte renderas.
-                    onChange={value => this.setReminder(value)}
-                    showTimeSelect
-                    timeFormat={"HH:mm"}
-                    minDate={moment()}
-                    maxDate={moment().add("2", "years")}
-                    showDisabledMonthNavigation
-                    isClearable={true}
+                <DatePickerWithClearButton
+                    onChangedValue={value => this.setReminder(value)}
                     value={reminder}
-                    dateFormat={"YYYY-MM-DD HH:mm"}
-                    placeholderText={"Remind me (optional)"}
                 />
                 <GUI.Button 
                     text={"Add"}
