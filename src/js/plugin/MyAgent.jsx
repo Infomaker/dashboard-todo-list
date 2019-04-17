@@ -70,6 +70,7 @@ export default class MyAgent extends Agent {
             });
         });
         this.on("@plugin_bundle:setItem", data => {
+            console.log('data :', data);
             if (!data.applicationId)
                 return;
 
@@ -119,6 +120,7 @@ export default class MyAgent extends Agent {
                                     applicationId={list.applicationId}
                                     notificationId={notificationId}
                                     item={item}
+                                    send={(event, data) => this.send(event, data)}
                                 />
                         })
                     }

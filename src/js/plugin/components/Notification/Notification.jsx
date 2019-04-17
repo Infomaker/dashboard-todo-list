@@ -3,7 +3,7 @@ import { Component } from 'react'
 import { ComponentButton, CustomWrapper } from './style'
 
 
-class Notification extends Application {  // Ska vi göra detta? (Hur annars få tillgång till this.send)
+class Notification extends Component {
 
     remind(minutes) {
         const { item } = this.props;
@@ -18,12 +18,12 @@ class Notification extends Application {  // Ska vi göra detta? (Hur annars få
     }
 
     saveItem(item) {
-        const { applicationId, notificationId } = this.props;
-        this.send("@plugin_bundle:setItem", {
+        const { applicationId, notificationId, send } = this.props;
+        send("@plugin_bundle:setItem", {
             applicationId: applicationId,
             item: item
         });
-        this.send("@plugin_bundle:closeNotification", {
+        send("@plugin_bundle:closeNotification", {
             notificationId: notificationId
         })
     }
