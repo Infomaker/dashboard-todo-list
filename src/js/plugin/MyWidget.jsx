@@ -47,6 +47,7 @@ export default class MyWidget extends Widget {
         //         })
         //     }
         // });
+        
     }
 
     saveItem(changedItem, done, applicationId) {
