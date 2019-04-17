@@ -1,80 +1,68 @@
-import React from 'react';
+import React , { Component } from 'react';
 import { GUI } from 'Dashboard';
 import { List } from '@components/List/style'
 import { Paragraph } from '@components/Paragraph/style'
 
 const Fragment = React.Fragment;
+export default class ListDone extends Component {
 
-class ListNotDone extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            showAll: false
-        };
+        this.state = { showAll: false }
     }
 
     render() { 
-        
+        const { items, changeDoneItem, removeItem } = this.props;
+        const { showAll } = this.state;
 
-        ListDone = (props) => {
+        const doneItems = items
+                            .map(item => {
+                                return {
+                                    id: item.id,
+                                    content: (
+                                        <Fragment>
+                                            <Paragraph
+                                                strikeThrough={true}
+                                                text={item.text} 
+                                            />
+                                            <GUI.Button
+                                                text={"Undo"}
+                                                size={"large"}
+                                                onClick={changeDoneItem(item, false)}
+                                            />
+                                            <GUI.Button 
+                                                text={"Delete"}
+                                                size={"large"}
+                                                onClick={removeItem(item)}
+                                            />
+                                        </Fragment>
+                                    )
+                                };
+                            });
 
-            const { items, showAll, changeDoneItem, removeItem } = props;
-
-            const doneItems = items
-                .map(item => {
-                    return {
-                        id: item.id,
-                        content: (
-                            <Fragment>
-                                <Paragraph
-                                    strikeThrough={true}
-                                    text={item.text}
-                                />
-                                <GUI.Button
-                                    text={"Undo"}
-                                    size={"large"}
-                                    onClick={() => changeDoneItem(item, false)}
-                                />
-                                <GUI.Button
-                                    text={"Delete"}
-                                    size={"large"}
-                                    onClick={() => removeItem(item)}
-                                />
-                            </Fragment>
-                        )
-                    };
-                });
-
-            return (
-                <Fragment>
-                    {doneItems.length > 0 && (
-                        <GUI.Checkbox
-                            label={"Show done items"}
-                            checked={showAll}
-                            onChange={checked =>
-                                this.setState({
-                                    showAll: checked
-                                })
-                            }
-                        />
-                    )}
-                    {showAll &&
-                        <List
-                            before={
-                                <GUI.Heading
-                                    level={"2"}
-                                    text={"Things you have done:"}
-                                />
-                            }
-                            items={doneItems}
+        return (<Fragment>
+            {doneItems.length > 0 && (
+                <GUI.Checkbox
+                    label={"Show done items"}
+                    checked={showAll}
+                    onChange={checked =>
+                        this.setState({
+                            showAll: checked
+                        })
+                    }
+                />
+            )}
+            {showAll &&
+                <List
+                    before={
+                        <GUI.Heading
+                            level={"2"}
+                            text={"Things you have done:"}
                         />
                     }
-                </Fragment>
-            );
+                    items={doneItems}
+                />
+            }
+        </Fragment>);
     }
 }
- 
-export default ListNotDone ;
-
-
-

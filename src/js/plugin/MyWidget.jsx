@@ -23,7 +23,7 @@ export default class MyWidget extends Widget {
                 // Feels hacky use map instead?
                 let displayLists = [];
                 data.forEach((list) => {
-                    let data = {...list};
+                    let data = { ...list };
                     data.items = data.items.filter(item => !item.done);
                     displayLists.push(data);
                 });
@@ -35,23 +35,23 @@ export default class MyWidget extends Widget {
             }
         })
 
-        this.send('@plugin_bundle:displayInWidget', {
-            callback: data => {
-                this.setState(oldState => {
-                    let filteredData = {...data};
-                    filteredData.items =  filteredData.items.filter(item => !item.done);
-                    return {
-                        lists: [data, ...oldState.lists],
-                        displayLists: [filteredData, ...oldState.displayLists]
-                    }
-                })
-            }
-        });
+        // this.send('@plugin_bundle:displayInWidget', {
+        //     callback: data => {
+        //         this.setState(oldState => {
+        //             let filteredData = {...data};
+        //             filteredData.items =  filteredData.items.filter(item => !item.done);
+        //             return {
+        //                 lists: [data, ...oldState.lists],
+        //                 displayLists: [filteredData, ...oldState.displayLists]
+        //             }
+        //         })
+        //     }
+        // });
     }
 
     saveItem(changedItem, done, applicationId) {
-        const { lists } = this.state; 
-        
+        const { lists } = this.state;
+
         let newLists = lists;
         newLists.forEach((list) => {
             if (list.applicationId == applicationId) {
@@ -82,7 +82,7 @@ export default class MyWidget extends Widget {
                     id: item.id,
                     content: (
                         <WidgetCheckbox   // Är detta rätt sätt? Med klassnamn och hur man ändrar ett 'state' med styled components
-                            className={item.done ? 'se-infomaker-gui-checkbox--strike-through': ''}
+                            className={item.done ? 'se-infomaker-gui-checkbox--strike-through' : ''}
                             label={item.text}
                             checked={item.done}
                             onChange={checked => this.saveItem(item, checked, list.applicationId)}
@@ -100,7 +100,7 @@ export default class MyWidget extends Widget {
                 }]
             }
         })
-        
+
         return (
             <WidgetList
                 items={listItems}

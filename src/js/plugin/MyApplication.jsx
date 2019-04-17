@@ -142,7 +142,6 @@ export default class MyApplication extends Application {
                         <Fragment>
                             <Paragraph
                                 strikeThrough={true}
-                                // className={"se-infomaker-gui-paragraph--strike-through"}
                                 text={item.text} 
                             />
                             <GUI.Button
@@ -190,7 +189,7 @@ export default class MyApplication extends Application {
     }
 
     render() {
-        const { current, reminder, items } = this.state;
+        const { current, reminder, items, showAll } = this.state;
 
         return (
             // Use @plugin_bundle_class and the bundle in the manifest will be used as your class
@@ -224,6 +223,7 @@ export default class MyApplication extends Application {
                     items={items.filter(item => item.done)}
                     changeDoneItem={(item, done) => this.changeDoneItem(item, done)}
                     removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
+                    showAll={showAll}
                 />
             </GUI.Wrapper>
         );

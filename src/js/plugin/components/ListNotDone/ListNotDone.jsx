@@ -5,9 +5,7 @@ import { List } from '@components/List/style'
 import { Icon } from '@components/Icon/style'
 
 const ListNotDone = (props) => {
-
     const { items, changeDoneItem, removeItem, setReminder } = props;
-
     const notDoneItems = items
         .map(item => {
             const date = item.reminder ? moment(item.reminder).format("YYYY-MM-DD HH:mm") : '';
@@ -44,16 +42,17 @@ const ListNotDone = (props) => {
             };
         });
 
-    return (<List
-                before={
-                    <GUI.Heading
-                        level={"2"}
-                        text={"Things to do:"}
-                    />
-                }
-                items={notDoneItems}
-            />);
-}
- 
-export default ListNotDone;
+    return (
+        <List
+            before={
+                <GUI.Heading
+                    level={"2"}
+                    text={"Things to do:"}
+                />
+            }
+            items={notDoneItems}
+        />);
 
+}
+
+export default ListNotDone;
