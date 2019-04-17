@@ -18,14 +18,14 @@ class Notification extends Component {
     }
 
     saveItem(item) {
-        const { applicationId, notificationId, send } = this.props;
-        send("@plugin_bundle:setItem", {
+        const { applicationId, notificationId, setItem, closeNotification } = this.props;
+
+        setItem({
             applicationId: applicationId,
             item: item
         });
-        send("@plugin_bundle:closeNotification", {
-            notificationId: notificationId
-        })
+        
+        closeNotification(notificationId);
     }
 
     render() {
