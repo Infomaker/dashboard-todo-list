@@ -70,37 +70,41 @@ export default class MyAgent extends Agent {
             });
         });
         this.on("@plugin_bundle:setItem", data => {
-            console.log('data :', data);
-            if (!data.applicationId)
-                return;
+            this.setItem(data);
+        });
+    }
 
-            let updatedList;
-            this.getLists().then(storedData => {
-                storedData.forEach(list => {
-                    if (list.applicationId === data.applicationId) {
-                        const itemIndex = list.items.findIndex(x => x.id === data.item.id);
-                        if (itemIndex >= 0) {
-                            list.items[itemIndex] = data.item;
-                            updatedList = list;
-                        }
+    setItem(data) {
+        if (!data.applicationId)
+            return;
+
+        let updatedList;
+        this.getLists().then(storedData => {
+            storedData.forEach(list => {
+                if (list.applicationId === data.applicationId) {
+                    const itemIndex = list.items.findIndex(x => x.id === data.item.id);
+                    if (itemIndex >= 0) {
+                        list.items[itemIndex] = data.item;
+                        updatedList = list;
                     }
-                });
-                this.setLists(storedData).then(success => {
-                    if (success && updatedList) {
-                        this.send("@plugin_bundle:updatedLists", updatedList);
-                    }
-                    else {
-                        console.error("Error: Could not update lists in store", success);
-                    }
-                });
+                }
+            });
+            this.setLists(storedData).then(success => {
+                if (success && updatedList) {
+                    this.send("@plugin_bundle:updatedLists", updatedList);
+                }
+                else {
+                    console.error("Error: Could not update lists in store", success);
+                }
             });
         });
-        this.on("@plugin_bundle:closeNotification", data => {
-            if (!data.notificationId)
-                return;
-            this.DNA.remove({
-                uid: data.notificationId
-            });
+    }
+
+    closeNotification(notificationId) {
+        if (!notificationId) 
+            return;
+        this.DNA.remove({
+            uid: notificationId
         });
     }
 
@@ -120,7 +124,9 @@ export default class MyAgent extends Agent {
                                     applicationId={list.applicationId}
                                     notificationId={notificationId}
                                     item={item}
-                                    send={(event, data) => this.send(event, data)}
+                                    //send={(event, data) => this.send(event, data)}
+                                    setItem={(data) => this.setItem(data)}
+                                    closeNotification={(notificationId) => this.closeNotification(notificationId)}
                                 />
                         })
                     }
