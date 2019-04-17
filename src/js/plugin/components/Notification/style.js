@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { GUI } from "Dashboard";
 
 const CustomWrapper = styled(GUI.Wrapper)`
-    background-color: cornflowerblue;
+    padding-top: 20px;
 `
 
 const ComponentButton = styled(GUI.Button)`
