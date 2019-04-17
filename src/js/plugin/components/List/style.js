@@ -3,7 +3,7 @@ import { GUI } from "Dashboard";
 
 const List = styled(GUI.List)`
     
-    padding-top: 10px;
+    padding-top: 24px;
     margin-bottom: 30px;
     border-bottom: solid 2px #eee;
     overflow: visible;

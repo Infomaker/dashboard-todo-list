@@ -6,12 +6,8 @@
 import { Application, GUI, createUUID } from "Dashboard";
 import React from "React";
 import { DatePickerWithClearButton } from '@components/DatePicker/style'
-import { List } from '@components/List/style'
-import { Paragraph } from '@components/Paragraph/style'
 import ListNotDone from './components/ListNotDone';
 import ListDone from './components/ListDone';
-
-const Fragment = React.Fragment;
 
 export default class MyApplication extends Application {
     constructor(props) {
@@ -130,66 +126,8 @@ export default class MyApplication extends Application {
         
     }
 
-    renderDoneItems() {
-        const { items, showAll } = this.state;
-
-        const doneItems = items
-            .filter(item => item.done)
-            .map(item => {
-                return {
-                    id: item.id,
-                    content: (
-                        <Fragment>
-                            <Paragraph
-                                strikeThrough={true}
-                                text={item.text} 
-                            />
-                            <GUI.Button
-                                text={"Undo"}
-                                size={"large"}
-                                onClick={() => this.changeDoneItem(item, false)}
-                            />
-                            <GUI.Button 
-                                text={"Delete"}
-                                size={"large"}
-                                onClick={() => this.removeItem(item)}
-                            />
-                        </Fragment>
-                    )
-                };
-            });
-
-        return (
-            <Fragment>
-                {doneItems.length > 0 && (
-                    <GUI.Checkbox
-                        label={"Show done items"}
-                        checked={showAll}
-                        onChange={checked =>
-                            this.setState({
-                                showAll: checked
-                            })
-                        }
-                    />
-                )}
-                <br />
-                {showAll && 
-                    <List
-                        before={
-                            <GUI.Heading
-                                level={"2"} 
-                                text={"Things you have done:"} 
-                            />
-                        }
-                        items={doneItems}
-                    />
-                }
-            </Fragment>
-        );
-    }
-
     render() {
-        const { current, reminder, items, showAll } = this.state;
+        const { current, reminder, items } = this.state;
 
         return (
             // Use @plugin_bundle_class and the bundle in the manifest will be used as your class
@@ -223,8 +161,8 @@ export default class MyApplication extends Application {
                     items={items.filter(item => item.done)}
                     changeDoneItem={(item, done) => this.changeDoneItem(item, done)}
                     removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
-                    showAll={showAll}
                 />
+                
             </GUI.Wrapper>
         );
     }

@@ -1,4 +1,4 @@
-import { Application, GUI, moment } from "Dashboard";
+import { moment } from "Dashboard";
 import { Component } from 'react'
 import { ComponentButton, CustomWrapper } from './style'
 
@@ -29,7 +29,7 @@ class Notification extends Component {
     }
 
     render() {
-        const { item } = this.props;
+        
         return (
             <CustomWrapper>
                 <div>

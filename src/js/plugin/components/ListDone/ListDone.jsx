@@ -28,12 +28,12 @@ export default class ListDone extends Component {
                                             <GUI.Button
                                                 text={"Undo"}
                                                 size={"large"}
-                                                onClick={changeDoneItem(item, false)}
+                                                onClick={() => changeDoneItem(item, false)}
                                             />
                                             <GUI.Button 
                                                 text={"Delete"}
                                                 size={"large"}
-                                                onClick={removeItem(item)}
+                                                onClick={() => removeItem(item)}
                                             />
                                         </Fragment>
                                     )
