@@ -3,12 +3,13 @@
  * Read more about Application (https://github.com/Infomaker/Dashboard-Plugin/wiki/Application)
  */
 
-import { Application, GUI, createUUID, moment } from "Dashboard";
+import { Application, GUI, createUUID } from "Dashboard";
 import React from "React";
 import { DatePickerWithClearButton } from '@components/DatePicker/style'
-import { Icon } from '@components/Icon/style'
 import { List } from '@components/List/style'
 import { Paragraph } from '@components/Paragraph/style'
+import ListNotDone from './components/ListNotDone';
+import ListDone from './components/ListDone';
 
 const Fragment = React.Fragment;
 
@@ -20,7 +21,6 @@ export default class MyApplication extends Application {
             items: [],
             current: "",
             reminder: "",
-            showAll: false
         };
 
         this.applicationId = props.id;
@@ -130,57 +130,6 @@ export default class MyApplication extends Application {
         
     }
 
-    renderNotDoneItems() {
-        const { items } = this.state;
-
-        const notDoneItems = items
-            .filter(item => !item.done)
-            .map(item => {
-                const date = item.reminder ? moment(item.reminder).format("YYYY-MM-DD HH:mm") : '';
-
-                return {
-                    id: item.id,
-                    content: (
-                        <React.Fragment>
-                           
-                            <GUI.Paragraph>
-                                {item.text}
-                            </GUI.Paragraph>
-                            
-                            <GUI.Button
-                                text={"Done"} 
-                                size={"large"} 
-                                onClick={() => this.changeDoneItem(item, true)}
-                            />
-                            <GUI.Button 
-                                text={"Delete"}
-                                size={"large"} 
-                                onClick={() => this.removeItem(item)}
-                            />
-                            <Icon
-                                iconClass="alarm"
-                                iconColor={"#424242"}
-                            />
-                            <DatePickerWithClearButton
-                                onChangedValue={value => this.setReminder(value, item)}
-                                value={date}
-                            />
-                        </React.Fragment>
-                    )
-                };
-            });
-
-        return <List 
-                    before={
-                        <GUI.Heading 
-                            level={"2"} 
-                            text={"Things to do:"} 
-                        />
-                    } 
-                    items={notDoneItems} 
-                />;
-    }
-
     renderDoneItems() {
         const { items, showAll } = this.state;
 
@@ -241,7 +190,7 @@ export default class MyApplication extends Application {
     }
 
     render() {
-        const { current, reminder } = this.state;
+        const { current, reminder, items } = this.state;
 
         return (
             // Use @plugin_bundle_class and the bundle in the manifest will be used as your class
@@ -265,8 +214,17 @@ export default class MyApplication extends Application {
                     size={"large"}
                     onClick={() => this.addItem(current)}
                 />
-                {this.renderNotDoneItems()}
-                {this.renderDoneItems()}
+                <ListNotDone 
+                    items={items.filter(item => !item.done)}
+                    changeDoneItem={(item, done) => this.changeDoneItem(item, done)}
+                    removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
+                    setReminder={(dateTime, item) => this.setReminder(dateTime, item)}
+                />
+                <ListDone
+                    items={items.filter(item => item.done)}
+                    changeDoneItem={(item, done) => this.changeDoneItem(item, done)}
+                    removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
+                />
             </GUI.Wrapper>
         );
     }
