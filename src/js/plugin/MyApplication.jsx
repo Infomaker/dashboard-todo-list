@@ -8,6 +8,8 @@ import React from "React";
 import { DatePickerWithClearButton } from '@components/DatePicker/style'
 import ListNotDone from './components/ListNotDone';
 import ListDone from './components/ListDone';
+import { Provider } from "react-redux";
+import store from "./redux/store";
 
 export default class MyApplication extends Application {
     constructor(props) {
@@ -123,7 +125,6 @@ export default class MyApplication extends Application {
         }
         item.reminder = dateTime;
         this.setItem(item);
-        
     }
 
     render() {
@@ -131,39 +132,41 @@ export default class MyApplication extends Application {
 
         return (
             // Use @plugin_bundle_class and the bundle in the manifest will be used as your class
-            <GUI.Wrapper
-                className={"@plugin_bundle_class"}>
-                <GUI.Title
-                    text={this.displayName}
-                />
-                <GUI.Input
-                    value={current}
-                    placeholder={"What todo?"}
-                    onChange={value => this.setState({ current: value })}
-                    onEnter={value => this.addItem(value)}
-                />
-                <DatePickerWithClearButton
-                    onChangedValue={value => this.setReminder(value)}
-                    value={reminder}
-                />
-                <GUI.Button 
-                    text={"Add"}
-                    size={"large"}
-                    onClick={() => this.addItem(current)}
-                />
-                <ListNotDone 
-                    items={items.filter(item => !item.done)}
-                    changeDoneItem={(item, done) => this.changeDoneItem(item, done)}
-                    removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
-                    setReminder={(dateTime, item) => this.setReminder(dateTime, item)}
-                />
-                <ListDone
-                    items={items.filter(item => item.done)}
-                    changeDoneItem={(item, done) => this.changeDoneItem(item, done)}
-                    removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
-                />
-                
-            </GUI.Wrapper>
+            <Provider store={store}>
+                <GUI.Wrapper
+                    className={"@plugin_bundle_class"}>
+                    <GUI.Title
+                        text={this.displayName}
+                    />
+                    <GUI.Input
+                        value={current}
+                        placeholder={"What todo?"}
+                        onChange={value => this.setState({ current: value })}
+                        onEnter={value => this.addItem(value)}
+                    />
+                    <DatePickerWithClearButton
+                        onChangedValue={value => this.setReminder(value)}
+                        value={reminder}
+                    />
+                    <GUI.Button 
+                        text={"Add"}
+                        size={"large"}
+                        onClick={() => this.addItem(current)}
+                    />
+                    <ListNotDone 
+                        items={items.filter(item => !item.done)}
+                        changeDoneItem={(item, done) => this.changeDoneItem(item, done)}
+                        removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
+                        setReminder={(dateTime, item) => this.setReminder(dateTime, item)}
+                    />
+                    <ListDone
+                        items={items.filter(item => item.done)}
+                        changeDoneItem={(item, done) => this.changeDoneItem(item, done)}
+                        removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
+                    />
+                    
+                </GUI.Wrapper>
+            </Provider>
         );
     }
 }

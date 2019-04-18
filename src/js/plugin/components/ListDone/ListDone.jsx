@@ -2,9 +2,11 @@ import React , { Component } from 'react';
 import { GUI } from 'Dashboard';
 import { List } from '@components/List/style'
 import { Paragraph } from '@components/Paragraph/style'
+import { connect } from "react-redux";
 
 const Fragment = React.Fragment;
-export default class ListDone extends Component {
+
+class ListDone extends Component {
 
     constructor(props) {
         super(props);
@@ -66,3 +68,13 @@ export default class ListDone extends Component {
         </Fragment>);
     }
 }
+
+function mapStateToProps(state) {
+    return {
+        items: state.reactItems
+    }
+}
+
+//export default connect(mapStateToProps)(ListDone);
+
+export default ListDone;
