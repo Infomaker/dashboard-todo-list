@@ -75,6 +75,6 @@ function mapStateToProps(state) {
     }
 }
 
-//export default connect(mapStateToProps)(ListDone);
+export default connect(mapStateToProps)(ListDone);
 
-export default ListDone;
+//export default ListDone;
