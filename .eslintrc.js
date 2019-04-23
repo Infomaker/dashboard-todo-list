@@ -21,6 +21,6 @@ module.exports = {
 		"react/jsx-uses-vars": [2],
 		"no-case-declarations": 0,
 		"no-console": 0,
-		"no-unused-vars": 1
+		"no-unused-vars": 0
 	}
 };

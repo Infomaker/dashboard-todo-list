@@ -1,16 +1,22 @@
-import { SET_ITEMS } from "../actionTypes";
+// import { SET_ITEMS } from "../actionTypes";
 
-const initialState = {
-    reduxItems: ['test','test2','test3']
-};
+export const SET_ITEMS = "SET_ITEMS";
+
+// const initialState = {
+//     items: ['test', 'test2', 'test3']
+// };
+
+const initialState = []
 
 export default function (state = initialState, action) {
+    console.log("redux.items", state, action)
     switch (action.type) {
         case SET_ITEMS: {
             const { items } = action.payload;
-            return {
-                reduxItems: items
-            };
+
+            return [
+                ...items
+            ]
         }
         default:
             return state;

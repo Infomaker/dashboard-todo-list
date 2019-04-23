@@ -15,6 +15,8 @@ import MyWidget from "@root/MyWidget";
 import MySettings from "@root/MySettings";
 import MyApplication from "@root/MyApplication";
 
+import items from "./redux/reducers/items";
+
 /**
  * You can also create an Health by extending the Health class from Dashboard (Dashboard.Health).
  * Don't forget to register it as well.
@@ -35,6 +37,10 @@ import MyApplication from "@root/MyApplication";
         application: MyApplication,
 
         // Settings is optional.
-        settings: MySettings
+        settings: MySettings,
+        reducers: {
+            todo: items
+        },
+        sharedReducers: false
     });
 })()
