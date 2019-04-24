@@ -4,20 +4,19 @@
  */
 
 import { GUI, createUUID } from "Dashboard";
-import React, {Component} from "React";
+import React, { Component } from "React";
 import { DatePickerWithClearButton } from '@components/DatePicker/style'
 import ListNotDone from './components/ListNotDone';
 import ListDone from './components/ListDone';
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 
-import {setItems} from './redux/actions'
+import { setItems } from './redux/actions'
 
 class TodoList extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            items: [],
             current: "",
             reminder: "",
         };
@@ -26,7 +25,6 @@ class TodoList extends Component {
 
         this.applicationId = props.applicationId;
         this.displayName = props.config.pluginTitle || "Todo";
-        console.log("todoList.Constructor", this.applicationId)
     }
 
     componentDidMount() {
@@ -80,7 +78,7 @@ class TodoList extends Component {
             done: false,
             reminder: reminder
         };
-        
+
         this.setItems([item, ...items]);
 
         this.setState({
@@ -162,12 +160,12 @@ class TodoList extends Component {
                     onChangedValue={value => this.setReminder(value)}
                     value={reminder}
                 />
-                <GUI.Button 
+                <GUI.Button
                     text={"Add"}
                     size={"large"}
                     onClick={() => this.addItem(current)}
                 />
-                <ListNotDone 
+                <ListNotDone
                     items={notDoneItems}
                     onItemDone={(item, done) => this.changeDoneItem(item, done)}
                     removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
@@ -178,7 +176,7 @@ class TodoList extends Component {
                     changeDoneItem={(item, done) => this.changeDoneItem(item, done)}
                     removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
                 />
-                
+
             </GUI.Wrapper>
         );
     }

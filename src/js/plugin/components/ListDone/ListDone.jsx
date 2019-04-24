@@ -17,7 +17,7 @@ class ListDone extends Component {
     render() {
         const { items, changeDoneItem, removeItem } = this.props;
         const { showAll } = this.state;
-        //console.log("ListDone.render", {myReduxItems})
+
         const doneItems = items
             .map(item => {
                 return {
