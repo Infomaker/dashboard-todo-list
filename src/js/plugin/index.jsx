@@ -41,6 +41,7 @@ import items from "./redux/reducers/items";
         reducers: {
             todo: items
         },
-        sharedReducers: false
+        sharedReducers: false,
+        middlewares: []
     });
 })()
