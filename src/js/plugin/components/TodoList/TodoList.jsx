@@ -6,11 +6,11 @@
 import { GUI, createUUID } from "Dashboard";
 import React, { Component } from "React";
 import { DatePickerWithClearButton } from '@components/DatePicker/style'
-import ListNotDone from './components/ListNotDone';
-import ListDone from './components/ListDone';
+import ListNotDone from '../ListNotDone';
+import ListDone from '../ListDone';
 import { connect } from 'react-redux'
 
-import { setItems } from './redux/actions'
+import { setItems } from '../../redux/actions'
 
 class TodoList extends Component {
     constructor(props) {
@@ -35,10 +35,6 @@ class TodoList extends Component {
         this.event.on("@plugin_bundle:updatedLists", data => {
             if (data.applicationId === this.applicationId) {
                 this.props.dispatch(setItems(data.items))
-
-                // this.setState({
-                //     items: data.items
-                // });
             }
         });
     }
@@ -49,10 +45,6 @@ class TodoList extends Component {
             name: this.displayName,
             callback: data => {
                 this.props.dispatch(setItems(data.find(x => x.applicationId === this.applicationId).items))
-
-                // this.setState({
-                //     items: data.find(x => x.applicationId === this.applicationId).items
-                // });
             }
         });
     }
@@ -70,7 +62,8 @@ class TodoList extends Component {
             return;
         }
 
-        const { items, reminder } = this.state;
+        const { reminder } = this.state;
+        const { allItems } = this.props;
 
         const item = {
             id: createUUID(),
@@ -79,7 +72,7 @@ class TodoList extends Component {
             reminder: reminder
         };
 
-        this.setItems([item, ...items]);
+        this.setItems([item, ...allItems]);
 
         this.setState({
             current: "",
@@ -99,7 +92,7 @@ class TodoList extends Component {
     removeItem(itemToRemove) {
         if (!itemToRemove) return;
 
-        const { items } = this.state;
+        const { allItems, confirm } = this.props;
 
         const message = `You're about to delete ${itemToRemove.text}, are you sure?`;
 
@@ -107,25 +100,18 @@ class TodoList extends Component {
             message: message,
             buttonTexts: ["Cancel", "Delete"],
             onConfirm: () => {
-                this.setItems(items.filter(item => item.id !== itemToRemove.id));
+                this.setItems(allItems.filter(item => item.id !== itemToRemove.id));
             }
         };
 
-        this.confirm(myConfirmObject);
+        confirm.open(myConfirmObject);
     }
 
-    // toggleItemDone(item) {
-    //     if (!item) return
+    toggleItemDone(item) {
+        if (!item) return
 
-    //     item.done = !item.done
-    //     this.setItem(item)
-    // }
-
-    changeDoneItem(item, done) {
-        if (!item) return;
-
-        item.done = done;
-        this.setItem(item);
+        item.done = !item.done
+        this.setItem(item)
     }
 
     setReminder(dateTime, item = null) {
@@ -167,13 +153,13 @@ class TodoList extends Component {
                 />
                 <ListNotDone
                     items={notDoneItems}
-                    onItemDone={(item, done) => this.changeDoneItem(item, done)}
+                    onItemDone={(item) => this.toggleItemDone(item)}
                     removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
                     setReminder={(dateTime, item) => this.setReminder(dateTime, item)}
                 />
                 <ListDone
                     items={doneItems}
-                    changeDoneItem={(item, done) => this.changeDoneItem(item, done)}
+                    changeDoneItem={(item) => this.toggleItemDone(item)}
                     removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
                 />
 
@@ -184,6 +170,7 @@ class TodoList extends Component {
 
 export default connect(state => {
     return {
+        allItems: state.todo,
         doneItems: state.todo.filter(item => item.done),
         notDoneItems: state.todo.filter(item => !item.done)
     }
