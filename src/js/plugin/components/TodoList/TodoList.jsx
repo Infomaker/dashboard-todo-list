@@ -10,7 +10,7 @@ import ListNotDone from '../ListNotDone';
 import ListDone from '../ListDone';
 import { connect } from 'react-redux'
 
-import { setItems } from '../../redux/actions'
+import { setItems, getItems } from '../../redux/todoActions'
 
 class TodoList extends Component {
     constructor(props) {
@@ -40,13 +40,21 @@ class TodoList extends Component {
     }
 
     getInitialItems() {
-        this.event.send("@plugin_bundle:getLists", {
+        const { event } = this.props;
+
+        this.props.dispatch(getItems({
             applicationId: this.applicationId,
-            name: this.displayName,
-            callback: data => {
-                this.props.dispatch(setItems(data.find(x => x.applicationId === this.applicationId).items))
-            }
-        });
+            displayName: this.displayName,
+            event: event
+        }));
+
+        // this.event.send("@plugin_bundle:getLists", {
+        //     applicationId: this.applicationId,
+        //     name: this.displayName,
+        //     callback: data => {
+        //         this.props.dispatch(setItems(data.find(x => x.applicationId === this.applicationId).items))
+        //     }
+        // });
     }
 
     setItems(items) {
@@ -170,8 +178,8 @@ class TodoList extends Component {
 
 export default connect(state => {
     return {
-        allItems: state.todo,
-        doneItems: state.todo.filter(item => item.done),
-        notDoneItems: state.todo.filter(item => !item.done)
+        allItems: state.todo.items,
+        doneItems: state.todo.items.filter(item => item.done),
+        notDoneItems: state.todo.items.filter(item => !item.done)
     }
 })(TodoList)

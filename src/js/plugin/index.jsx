@@ -15,8 +15,9 @@ import MyWidget from "@root/MyWidget";
 import MySettings from "@root/MySettings";
 import MyApplication from "@root/MyApplication";
 
-import items from "./redux/reducers/items";
+import { items, todoReducer } from "./redux/reducers/todoReducer";
 import { logMiddleWare } from "./redux/middlewares/logMiddleWare";
+import thunk from "redux-thunk";
 
 /**
  * You can also create an Health by extending the Health class from Dashboard (Dashboard.Health).
@@ -40,10 +41,11 @@ import { logMiddleWare } from "./redux/middlewares/logMiddleWare";
         // Settings is optional.
         settings: MySettings,
         reducers: {
-            todo: items
+            todo: todoReducer //items
         },
         sharedReducers: false,
         middlewares: [
+            thunk,
             logMiddleWare
         ]
     });
