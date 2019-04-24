@@ -2,7 +2,8 @@
 export const SET_ITEMS = "SET_ITEMS";
 const initialState = []
 
-export function items(state = initialState, action) {
+export function setItems(state = initialState, action) {
+    console.log("setItems", action)
     switch (action.type) {
         case SET_ITEMS: {
             const { items } = action.payload;
@@ -29,6 +30,7 @@ const todoInitialState = {
 };
 
 export function todoReducer(state = todoInitialState, action) {
+    console.log("todoReducer", action)
     switch (action.type) {
         case FETCH_TODOS_BEGIN:
             // Mark the state as "loading" so we can show a spinner or something
@@ -69,4 +71,4 @@ export function todoReducer(state = todoInitialState, action) {
     }
 }
 
-export default { items, todoReducer };
+export default { setItems, todoReducer };

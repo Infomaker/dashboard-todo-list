@@ -15,7 +15,7 @@ import MyWidget from "@root/MyWidget";
 import MySettings from "@root/MySettings";
 import MyApplication from "@root/MyApplication";
 
-import { items, todoReducer } from "./redux/reducers/todoReducer";
+import { setItems, todoReducer } from "./redux/reducers/todoReducer";
 import { logMiddleWare } from "./redux/middlewares/logMiddleWare";
 import thunk from "redux-thunk";
 
@@ -41,7 +41,8 @@ import thunk from "redux-thunk";
         // Settings is optional.
         settings: MySettings,
         reducers: {
-            todo: todoReducer //items
+            todo: todoReducer,
+            //test: setItems
         },
         sharedReducers: false,
         middlewares: [

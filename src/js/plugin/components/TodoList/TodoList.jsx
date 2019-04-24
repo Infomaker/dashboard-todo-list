@@ -135,7 +135,7 @@ class TodoList extends Component {
 
     render() {
         const { current, reminder } = this.state;
-        const { doneItems, notDoneItems } = this.props
+        const { doneItems, notDoneItems, loading } = this.props
 
         return (
             // Use @plugin_bundle_class and the bundle in the manifest will be used as your class
@@ -159,17 +159,26 @@ class TodoList extends Component {
                     size={"large"}
                     onClick={() => this.addItem(current)}
                 />
-                <ListNotDone
-                    items={notDoneItems}
-                    onItemDone={(item) => this.toggleItemDone(item)}
-                    removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
-                    setReminder={(dateTime, item) => this.setReminder(dateTime, item)}
-                />
-                <ListDone
-                    items={doneItems}
-                    changeDoneItem={(item) => this.toggleItemDone(item)}
-                    removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
-                />
+                {loading &&
+                    <div>
+                        Loading...
+                    </div>
+                }
+                {!loading &&
+                    <React.Fragment>
+                        <ListNotDone
+                            items={notDoneItems}
+                            onItemDone={(item) => this.toggleItemDone(item)}
+                            removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
+                            setReminder={(dateTime, item) => this.setReminder(dateTime, item)}
+                        />
+                        <ListDone
+                            items={doneItems}
+                            changeDoneItem={(item) => this.toggleItemDone(item)}
+                            removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
+                        />
+                    </React.Fragment>
+                }
 
             </GUI.Wrapper>
         );
@@ -178,6 +187,7 @@ class TodoList extends Component {
 
 export default connect(state => {
     return {
+        loading: state.todo.loading,
         allItems: state.todo.items,
         doneItems: state.todo.items.filter(item => item.done),
         notDoneItems: state.todo.items.filter(item => !item.done)

@@ -68,8 +68,8 @@ export default class MyWidget extends Widget {
                 return {
                     id: item.id,
                     content: (
-                        <WidgetCheckbox   // Är detta rätt sätt? Med klassnamn och hur man ändrar ett 'state' med styled components
-                            strikeThrough={item.done ? true : false}
+                        <WidgetCheckbox
+                            strikeThrough={item.done}
                             label={item.text}
                             checked={item.done}
                             onChange={checked => this.saveItem(item, checked, list.applicationId)}
