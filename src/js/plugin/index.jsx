@@ -16,6 +16,7 @@ import MySettings from "@root/MySettings";
 import MyApplication from "@root/MyApplication";
 
 import items from "./redux/reducers/items";
+import { logMiddleWare } from "./redux/middlewares/logMiddleWare";
 
 /**
  * You can also create an Health by extending the Health class from Dashboard (Dashboard.Health).
@@ -42,6 +43,8 @@ import items from "./redux/reducers/items";
             todo: items
         },
         sharedReducers: false,
-        middlewares: []
+        middlewares: [
+            logMiddleWare
+        ]
     });
 })()
