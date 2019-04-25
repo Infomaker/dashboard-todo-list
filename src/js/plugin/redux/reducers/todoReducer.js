@@ -1,26 +1,27 @@
 
-export const SET_ITEMS = "SET_ITEMS";
-const initialState = []
+// export const SET_ITEMS = "SET_ITEMS";
+// const initialState = []
 
-export function setItems(state = initialState, action) {
-    console.log("setItems", action)
-    switch (action.type) {
-        case SET_ITEMS: {
-            const { items } = action.payload;
+// export function setItems(state = initialState, action) {
+//     console.log("setItems", action)
+//     switch (action.type) {
+//         case SET_ITEMS: {
+//             const { items } = action.payload;
 
-            return [
-                ...items
-            ]
-        }
-        default:
-            return state;
-    }
-}
+//             return [
+//                 ...items
+//             ]
+//         }
+//         default:
+//             return state;
+//     }
+// }
 
 import {
     FETCH_TODOS_BEGIN,
     FETCH_TODOS_SUCCESS,
-    FETCH_TODOS_FAILURE
+    FETCH_TODOS_FAILURE,
+    SET_TODOS
 } from '../todoActions';
 
 const todoInitialState = {
@@ -65,10 +66,17 @@ export function todoReducer(state = todoInitialState, action) {
                 items: []
             };
 
+        case SET_TODOS:
+            return {
+                ...state,
+                loading: false,
+                items: action.payload.todos
+            };
+
         default:
             // ALWAYS have a default case in a reducer
             return state;
     }
 }
 
-export default { setItems, todoReducer };
+export default { todoReducer };

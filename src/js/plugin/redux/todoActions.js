@@ -1,17 +1,13 @@
-import { SET_ITEMS } from "./reducers/todoReducer";
 
 // use this to enable logging
 
 export const setItems = items => {
     return (dispatch, getState) => {
 
-        const state = getState()
-        console.log('setItems :', state);
-
         dispatch({
-            type: SET_ITEMS,
+            type: SET_TODOS,
             payload: {
-                items: items
+                todos: items
             }
         })
     }
@@ -35,6 +31,7 @@ export const getItems = applicationData => {
 export const FETCH_TODOS_BEGIN = 'FETCH_TODOS_BEGIN';
 export const FETCH_TODOS_SUCCESS = 'FETCH_TODOS_SUCCESS';
 export const FETCH_TODOS_FAILURE = 'FETCH_TODOS_FAILURE';
+export const SET_TODOS = 'SET_TODOS';
 
 export const fetchTodosBegin = () => ({
     type: FETCH_TODOS_BEGIN

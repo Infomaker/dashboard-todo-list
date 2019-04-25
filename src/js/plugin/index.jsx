@@ -15,7 +15,7 @@ import MyWidget from "@root/MyWidget";
 import MySettings from "@root/MySettings";
 import MyApplication from "@root/MyApplication";
 
-import { setItems, todoReducer } from "./redux/reducers/todoReducer";
+import { todoReducer } from "./redux/reducers/todoReducer";
 import { logMiddleWare } from "./redux/middlewares/logMiddleWare";
 import thunk from "redux-thunk";
 
