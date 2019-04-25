@@ -5,7 +5,7 @@ import { List } from '@components/List/style'
 import { Icon } from '@components/Icon/style'
 
 const ListNotDone = (props) => {
-    const { items, changeDoneItem, removeItem, setReminder } = props;
+    const { items, onItemDone, removeItem, setReminder } = props;
     const notDoneItems = items
         .map(item => {
             const date = item.reminder ? moment(item.reminder).format("YYYY-MM-DD HH:mm") : '';
@@ -22,7 +22,7 @@ const ListNotDone = (props) => {
                         <GUI.Button
                             text={"Done"}
                             size={"large"}
-                            onClick={() => changeDoneItem(item, true)}
+                            onClick={() => onItemDone(item)}
                         />
                         <GUI.Button
                             text={"Delete"}

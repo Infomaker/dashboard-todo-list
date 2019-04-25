@@ -25,7 +25,7 @@ const ListDone = (props) => {
                         <GUI.Button
                             text={"Undo"}
                             size={"large"}
-                            onClick={() => changeDoneItem(item, false)}
+                            onClick={() => changeDoneItem(item)}
                         />
                         <GUI.Button
                             text={"Delete"}
