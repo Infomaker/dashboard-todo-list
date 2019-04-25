@@ -1,66 +1,88 @@
 
 import { GUI, createUUID } from "Dashboard";
-import React, { Component } from "React";
+import React, { useState, useEffect } from "React";
+import { Store } from '../../services/context/store';
 import { DatePickerWithClearButton } from '@components/DatePicker/style'
 import ListNotDone from '../ListNotDone';
 import ListDone from '../ListDone';
 
-export default class TodoList extends Component {
-    constructor(props) {
-        super(props);
+const TodoList = (props) => {
 
-        this.state = {
-            items: [],
-            current: "",
-            reminder: "",
-        };
+    const event = props.event;
+    const applicationId = props.applicationId;
+    const displayName = props.config.pluginTitle || "Todo";
 
-        this.event = this.props.event
+    //const[count, setCount] = useState(0);
 
-        this.applicationId = props.applicationId;
-        this.displayName = props.config.pluginTitle || "Todo";
-    }
-
-    componentDidMount() {
-        this.event.ready("@plugin_bundle-agent", () => {
-            this.getInitialItems();
+    const [items, setStateItems] = useState([]);
+    useEffect(() => {
+        event.ready("@plugin_bundle-agent", () => {
+            getInitialItems();
         });
 
-        this.event.on("@plugin_bundle:updatedLists", data => {
-            if (data.applicationId === this.applicationId) {
-                this.setState({
-                    items: data.items
-                });
+        event.on("@plugin_bundle:updatedLists", data => {
+            if (data.applicationId === applicationId) {
+                setStateItems(data.Items);
             }
         });
-    }
+    });
 
-    getInitialItems() {
-        this.event.send("@plugin_bundle:getLists", {
-            applicationId: this.applicationId,
-            name: this.displayName,
+    const [current, setStateCurrent] = useState('');
+    const [reminder, setStateReminder] = useState('');
+
+    // this.state = {
+    //     items: [],
+    //     current: "",
+    //     reminder: "",
+    // };
+
+    
+
+
+    //componentDidMount() {
+    // this.event.ready("@plugin_bundle-agent", () => {
+    //     this.getInitialItems();
+    // });
+
+    // this.event.on("@plugin_bundle:updatedLists", data => {
+    //     if (data.applicationId === this.applicationId) {
+    //         setStateItems(data.Items);
+
+    //         // this.setState({
+    //         //     items: data.items
+    //         // });
+    //     }
+    // });
+    //}
+
+    const getInitialItems = () => {
+        event.send("@plugin_bundle:getLists", {
+            applicationId: applicationId,
+            name: displayName,
             callback: data => {
-                this.setState({
-                    items: data.find(x => x.applicationId === this.applicationId).items
-                });
+                setStateItems(data.find(x => x.applicationId === applicationId).items);
+
+                // this.setState({
+                //     items: data.find(x => x.applicationId === this.applicationId).items
+                // });
             }
         });
     }
 
-    setItems(items) {
-        this.event.send("@plugin_bundle:setLists", {
-            applicationId: this.applicationId,
-            name: this.displayName,
+    const setItems = (items) => {
+        event.send("@plugin_bundle:setLists", {
+            applicationId: applicationId,
+            name: displayName,
             items: items
         });
     }
 
-    addItem(itemText) {
+    const addItem = (itemText) => {
         if (itemText === "") {
             return;
         }
 
-        const { items, reminder } = this.state;
+        //const { items, reminder } = this.state;
 
         const item = {
             id: createUUID(),
@@ -69,27 +91,30 @@ export default class TodoList extends Component {
             reminder: reminder
         };
 
-        this.setItems([item, ...items]);
+        setItems([item, ...items]);
 
-        this.setState({
-            current: "",
-            reminder: ""
-        });
+        setStateCurrent('');
+        setStateReminder('');
+
+        // this.setState({
+        //     current: "",
+        //     reminder: ""
+        // });
     }
 
-    setItem(item) {
+    const setItem = (item) => {
         if (!item) return;
 
-        this.event.send('@plugin_bundle:setItem', {
-            applicationId: this.applicationId,
+        event.send('@plugin_bundle:setItem', {
+            applicationId: applicationId,
             item: item
         });
     }
 
-    removeItem(itemToRemove) {
+    const removeItem = (itemToRemove) => {
         if (!itemToRemove) return;
 
-        const { allItems, confirm } = this.props;
+        const { allItems, confirm } = props;
 
         const message = `You're about to delete ${itemToRemove.text}, are you sure?`;
 
@@ -97,69 +122,75 @@ export default class TodoList extends Component {
             message: message,
             buttonTexts: ["Cancel", "Delete"],
             onConfirm: () => {
-                this.setItems(allItems.filter(item => item.id !== itemToRemove.id));
+                setItems(allItems.filter(item => item.id !== itemToRemove.id));
             }
         };
 
         confirm.open(myConfirmObject);
     }
 
-    toggleItemDone(item) {
+    const toggleItemDone = (item) => {
         if (!item) return
 
         item.done = !item.done
-        this.setItem(item)
+        setItem(item)
     }
 
-    setReminder(dateTime, item = null) {
+    const setReminder = (dateTime, item = null) => {
         if (item === null) {
-            this.setState({
-                reminder: dateTime
-            });
+            setStateReminder(dateTime);
+            // this.setState({
+            //     reminder: dateTime
+            // });
             return;
         }
         item.reminder = dateTime;
-        this.setItem(item);
+        setItem(item);
     }
 
-    render() {
-        const { current, reminder, items } = this.state;
+    //render() {
+    //const { current, reminder, items } = this.state;
 
-        return (
-            // Use @plugin_bundle_class and the bundle in the manifest will be used as your class
-            <GUI.Wrapper
-                className={"@plugin_bundle_class"}>
-                <GUI.Title
-                    text={this.displayName}
-                />
-                <GUI.Input
-                    value={current}
-                    placeholder={"What todo?"}
-                    onChange={value => this.setState({ current: value })}
-                    onEnter={value => this.addItem(value)}
-                />
-                <DatePickerWithClearButton
-                    onChangedValue={value => this.setReminder(value)}
-                    value={reminder}
-                />
-                <GUI.Button
-                    text={"Add"}
-                    size={"large"}
-                    onClick={() => this.addItem(current)}
-                />
-                <ListNotDone
-                    items={items.filter(item => !item.done)}
-                    onItemDone={(item) => this.toggleItemDone(item)}
-                    removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
-                    setReminder={(dateTime, item) => this.setReminder(dateTime, item)}
-                />
-                <ListDone
-                    items={items.filter(item => item.done)}
-                    changeDoneItem={(item) => this.toggleItemDone(item)}
-                    removeItem={(itemToRemove) => this.removeItem(itemToRemove)}
-                />
+    const store = React.useContext(Store);
+    console.log('store :', store);
 
-            </GUI.Wrapper>
-        );
-    }
+    return (
+        // Use @plugin_bundle_class and the bundle in the manifest will be used as your class
+        <GUI.Wrapper
+            className={"@plugin_bundle_class"}>
+            <GUI.Title
+                text={displayName}
+            />
+            <GUI.Input
+                value={current}
+                placeholder={"What todo?"}
+                onChange={value => setStateCurrent(value)}
+                onEnter={value => addItem(value)}
+            />
+            <DatePickerWithClearButton
+                onChangedValue={value => setReminder(value)}
+                value={reminder}
+            />
+            <GUI.Button
+                text={"Add"}
+                size={"large"}
+                onClick={() => addItem(current)}
+            />
+            <ListNotDone
+                items={items.filter(item => !item.done)}
+                onItemDone={(item) => toggleItemDone(item)}
+                removeItem={(itemToRemove) => removeItem(itemToRemove)}
+                setReminder={(dateTime, item) => setReminder(dateTime, item)}
+            />
+            <ListDone
+                items={items.filter(item => item.done)}
+                changeDoneItem={(item) => toggleItemDone(item)}
+                removeItem={(itemToRemove) => removeItem(itemToRemove)}
+            />
+
+        </GUI.Wrapper>
+    );
+    //}
 }
+
+export default TodoList;

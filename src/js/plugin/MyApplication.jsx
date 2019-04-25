@@ -1,4 +1,5 @@
 import Dashboard from 'Dashboard'
+import { StoreProvider } from './services/context/store';
 import TodoList from './components/TodoList/TodoList'
 
 class Application extends Dashboard.Application {
@@ -23,13 +24,15 @@ class Application extends Dashboard.Application {
 
     render() {
         return (
-            <TodoList
-                event={this.event}
-                confirm={this.confirm}
-                modal={this.modal}
-                applicationId={this.props.id}
-                config={this.props.config}
-            />
+            <StoreProvider>
+                <TodoList
+                    event={this.event}
+                    confirm={this.confirm}
+                    modal={this.modal}
+                    applicationId={this.props.id}
+                    config={this.props.config}
+                />
+            </StoreProvider>
         );
     }
 }
