@@ -1,7 +1,7 @@
 
 import { GUI, createUUID } from "Dashboard";
 import React, { useState, useEffect } from "React";
-// import { Store } from '../../services/context/store';
+import { Store, setStoreItems } from '../../services/context/store';
 import { DatePickerWithClearButton } from '@components/DatePicker/style'
 import ListNotDone from '../ListNotDone';
 import ListDone from '../ListDone';
@@ -12,13 +12,20 @@ const TodoList = (props) => {
     const applicationId = props.applicationId;
     const displayName = props.config.pluginTitle || "Todo";
 
-    const [items, setStateItems] = useState([]);
+    //const [items, setStateItems] = useState([]);
     const [current, setStateCurrent] = useState('');
     const [reminder, setStateReminder] = useState('');
 
-    console.log('can creat --> ', props.hasPermission('@plugin_bundle-create-item'))
-    console.log('reminder -->', props.hasPermission('@plugin_bundle-use-reminder'))
+    const { state, dispatch } = React.useContext(Store);
 
+    console.log('state :', state);
+
+    const setStoreItems = items => {
+        return dispatch({
+            type: 'SET_DATA',
+            payload: items
+        })
+    };
 
     useEffect(() => {
         event.ready("@plugin_bundle-agent", () => {
@@ -26,7 +33,12 @@ const TodoList = (props) => {
         });
         event.on("@plugin_bundle:updatedLists", data => {
             if (data.applicationId === applicationId) {
-                setStateItems(data.items);
+                //setStateItems(data.items);
+                // dispatch({
+                //     type: 'FETCH_DATA',
+                //     payload: data.items
+                // })
+                setStoreItems(data.items);
             }
         });
     }, []);
@@ -36,7 +48,12 @@ const TodoList = (props) => {
             applicationId: applicationId,
             name: displayName,
             callback: data => {
-                setStateItems(data.find(x => x.applicationId === applicationId).items);
+                //setStateItems(data.find(x => x.applicationId === applicationId).items);
+                // dispatch({
+                //     type: 'FETCH_DATA',
+                //     payload: data.find(x => x.applicationId === applicationId).items
+                // })
+                setStoreItems(data.find(x => x.applicationId === applicationId).items);
             }
         });
     }
@@ -61,7 +78,7 @@ const TodoList = (props) => {
             reminder: reminder
         };
 
-        setItems([item, ...items]);
+        setItems([item, ...state.items]);
 
         setStateCurrent('');
         setStateReminder('');
@@ -79,7 +96,7 @@ const TodoList = (props) => {
     const removeItem = (itemToRemove) => {
         if (!itemToRemove) return;
 
-        const { allItems, confirm } = props;
+        const { confirm } = props;
 
         const message = `You're about to delete ${itemToRemove.text}, are you sure?`;
 
@@ -87,7 +104,7 @@ const TodoList = (props) => {
             message: message,
             buttonTexts: ["Cancel", "Delete"],
             onConfirm: () => {
-                setItems(allItems.filter(item => item.id !== itemToRemove.id));
+                setItems(state.items.filter(item => item.id !== itemToRemove.id));
             }
         };
 
@@ -110,9 +127,7 @@ const TodoList = (props) => {
         setItem(item);
     }
 
-    // const store = React.useContext(Store);
-    // console.log('store :', store);
-    console.log("TodoList render)0")
+
 
     const canRemind = props.hasPermission('@plugin_bundle-use-reminder')
 
@@ -143,13 +158,13 @@ const TodoList = (props) => {
                 onClick={() => addItem(current)}
             />
             <ListNotDone
-                items={items.filter(item => !item.done)}
+                items={state.items.filter(item => !item.done)}
                 onItemDone={(item) => toggleItemDone(item)}
                 removeItem={(itemToRemove) => removeItem(itemToRemove)}
                 setReminder={(dateTime, item) => setReminder(dateTime, item)}
             />
             <ListDone
-                items={items.filter(item => item.done)}
+                items={state.items.filter(item => item.done)}
                 changeDoneItem={(item) => toggleItemDone(item)}
                 removeItem={(itemToRemove) => removeItem(itemToRemove)}
             />

@@ -4,7 +4,13 @@ import { DatePickerWithClearButton } from '@components/DatePicker/style'
 import { List } from '@components/List/style'
 import { Icon } from '@components/Icon/style'
 
+import { Store } from '../../services/context/store';
+
 const ListNotDone = (props) => {
+
+    const { state, dispatch } = React.useContext(Store);
+    console.log("Listnotdone", state)
+
     const { items, onItemDone, removeItem, setReminder } = props;
     const notDoneItems = items
         .map(item => {
