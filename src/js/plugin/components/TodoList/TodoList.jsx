@@ -18,8 +18,6 @@ const TodoList = (props) => {
 
     const { state, dispatch } = React.useContext(Store);
 
-    console.log('state :', state);
-
     useEffect(() => {
         event.ready("@plugin_bundle-agent", () => {
             getInitialItems();
@@ -120,8 +118,6 @@ const TodoList = (props) => {
         setItem(item);
     }
 
-
-
     const canRemind = props.hasPermission('@plugin_bundle-use-reminder')
 
     return (
@@ -161,7 +157,6 @@ const TodoList = (props) => {
                 changeDoneItem={(item) => toggleItemDone(item)}
                 removeItem={(itemToRemove) => removeItem(itemToRemove)}
             />
-
         </GUI.Wrapper>
     );
 }
