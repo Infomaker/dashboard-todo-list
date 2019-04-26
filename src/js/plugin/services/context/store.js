@@ -7,11 +7,11 @@ const initialState = {
     items: []
 }
 
-export const setStoreItems = (dispatch, items) => {
-    dispatch({
+export const setStoreItems = items => {
+    return {
         type: 'SET_DATA',
         payload: items
-    })
+    }
 }
 
 function itemsReducer(state, action) {
@@ -25,6 +25,7 @@ function itemsReducer(state, action) {
 
 export function StoreProvider(props) {
     const [state, dispatch] = React.useReducer(itemsReducer, initialState);
+
     const value = { state, dispatch };
     return <Store.Provider
         value={value}>{props.children}

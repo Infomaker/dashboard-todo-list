@@ -1,7 +1,7 @@
 
 import { GUI, createUUID } from "Dashboard";
 import React, { useState, useEffect } from "React";
-import { Store, setStoreItems } from '../../services/context/store';
+import { setStoreItems, Store } from '../../services/context/store';
 import { DatePickerWithClearButton } from '@components/DatePicker/style'
 import ListNotDone from '../ListNotDone';
 import ListDone from '../ListDone';
@@ -29,7 +29,7 @@ const TodoList = (props) => {
                 //     type: 'FETCH_DATA',
                 //     payload: data.items
                 // })
-                setStoreItems(dispatch, data.items);
+                dispatch(setStoreItems(data.items))
             }
         });
     }, []);
@@ -44,7 +44,9 @@ const TodoList = (props) => {
                 //     type: 'FETCH_DATA',
                 //     payload: data.find(x => x.applicationId === applicationId).items
                 // })
-                setStoreItems(dispatch, data.find(x => x.applicationId === applicationId).items)
+
+                const items = data.find(x => x.applicationId === applicationId).items
+                dispatch(setStoreItems(items))
             }
         });
     }
