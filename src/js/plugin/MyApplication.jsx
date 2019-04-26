@@ -28,12 +28,7 @@ class Application extends Dashboard.Application {
 
     render() {
         return (
-            <StaticProvider staticContext={{
-                event: this.event,
-                confirm: this.confirm,
-                modal: this.modal,
-                hasPermission: this.hasPermission
-            }} >
+            <StoreProvider>
                 <TodoList
                     event={this.event}
                     confirm={this.confirm}
@@ -42,7 +37,7 @@ class Application extends Dashboard.Application {
                     config={this.props.config}
                     hasPermission={this.hasPermission}
                 />
-            </StaticProvider>
+            </StoreProvider>
         );
     }
 }

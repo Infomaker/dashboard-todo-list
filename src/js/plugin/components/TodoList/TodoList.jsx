@@ -1,7 +1,7 @@
 
-import { GUI, createUUID, withUser } from "Dashboard";
+import { GUI, createUUID } from "Dashboard";
 import React, { useState, useEffect } from "React";
-import { Store } from '../../services/context/store';
+// import { Store } from '../../services/context/store';
 import { DatePickerWithClearButton } from '@components/DatePicker/style'
 import ListNotDone from '../ListNotDone';
 import ListDone from '../ListDone';
@@ -26,7 +26,6 @@ const TodoList = (props) => {
         });
         event.on("@plugin_bundle:updatedLists", data => {
             if (data.applicationId === applicationId) {
-                console.log({ data })
                 setStateItems(data.items);
             }
         });
@@ -157,7 +156,6 @@ const TodoList = (props) => {
 
         </GUI.Wrapper>
     );
-    //}
 }
 
-export default (TodoList);
+export default TodoList;
