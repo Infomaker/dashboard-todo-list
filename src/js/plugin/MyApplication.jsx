@@ -20,19 +20,29 @@ class Application extends Dashboard.Application {
         this.modal = {
             open: this.openModal.bind(this)
         }
+
+        this.hasPermission = this.hasPermission.bind(this);
     }
+
+
 
     render() {
         return (
-            <StoreProvider>
+            <StaticProvider staticContext={{
+                event: this.event,
+                confirm: this.confirm,
+                modal: this.modal,
+                hasPermission: this.hasPermission
+            }} >
                 <TodoList
                     event={this.event}
                     confirm={this.confirm}
                     modal={this.modal}
                     applicationId={this.props.id}
                     config={this.props.config}
+                    hasPermission={this.hasPermission}
                 />
-            </StoreProvider>
+            </StaticProvider>
         );
     }
 }

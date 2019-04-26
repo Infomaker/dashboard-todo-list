@@ -35,6 +35,18 @@ import MyApplication from "@root/MyApplication";
         application: MyApplication,
 
         // Settings is optional.
-        settings: MySettings
+        settings: MySettings,
+        permissionKeys: [
+            {
+                label: 'Create Item',
+                id: '@plugin_bundle-create-item',
+                description: 'Create new Todo items .'
+            },
+            {
+                label: 'Use reminder',
+                id: '@plugin_bundle-use-reminder',
+                description: 'Allow to use reminder functionality.'
+            }
+        ]
     });
 })()

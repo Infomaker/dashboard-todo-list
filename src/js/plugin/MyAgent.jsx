@@ -4,7 +4,7 @@
  */
 
 import { Agent, moment, createUUID } from "Dashboard";
-import Notification from "./components/Notification";
+import Notification from "./components/Notification"
 
 export default class MyAgent extends Agent {
     constructor(props) {
@@ -25,7 +25,7 @@ export default class MyAgent extends Agent {
         const DNA_BUNDLE = 'se.infomaker.DNA-Agent';
         const DNA_GET_LIB = `${DNA_BUNDLE}:getDNALib`;
         const DNA_LIB = `${DNA_BUNDLE}:DNALib`;
-        
+
         this.ready(DNA_BUNDLE, () => {
             this.on(DNA_LIB, userData => {
                 let _dna = userData.DNA;
@@ -101,7 +101,7 @@ export default class MyAgent extends Agent {
     }
 
     closeNotification(notificationId) {
-        if (!notificationId) 
+        if (!notificationId)
             return;
         this.DNA.remove({
             uid: notificationId

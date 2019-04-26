@@ -1,5 +1,5 @@
 
-import { GUI, createUUID } from "Dashboard";
+import { GUI, createUUID, withUser } from "Dashboard";
 import React, { useState, useEffect } from "React";
 import { Store } from '../../services/context/store';
 import { DatePickerWithClearButton } from '@components/DatePicker/style'
@@ -12,48 +12,25 @@ const TodoList = (props) => {
     const applicationId = props.applicationId;
     const displayName = props.config.pluginTitle || "Todo";
 
-    //const[count, setCount] = useState(0);
-
     const [items, setStateItems] = useState([]);
+    const [current, setStateCurrent] = useState('');
+    const [reminder, setStateReminder] = useState('');
+
+    console.log('can creat --> ', props.hasPermission('@plugin_bundle-create-item'))
+    console.log('reminder -->', props.hasPermission('@plugin_bundle-use-reminder'))
+
+
     useEffect(() => {
         event.ready("@plugin_bundle-agent", () => {
             getInitialItems();
         });
-
         event.on("@plugin_bundle:updatedLists", data => {
             if (data.applicationId === applicationId) {
-                setStateItems(data.Items);
+                console.log({ data })
+                setStateItems(data.items);
             }
         });
-    });
-
-    const [current, setStateCurrent] = useState('');
-    const [reminder, setStateReminder] = useState('');
-
-    // this.state = {
-    //     items: [],
-    //     current: "",
-    //     reminder: "",
-    // };
-
-    
-
-
-    //componentDidMount() {
-    // this.event.ready("@plugin_bundle-agent", () => {
-    //     this.getInitialItems();
-    // });
-
-    // this.event.on("@plugin_bundle:updatedLists", data => {
-    //     if (data.applicationId === this.applicationId) {
-    //         setStateItems(data.Items);
-
-    //         // this.setState({
-    //         //     items: data.items
-    //         // });
-    //     }
-    // });
-    //}
+    }, []);
 
     const getInitialItems = () => {
         event.send("@plugin_bundle:getLists", {
@@ -61,10 +38,6 @@ const TodoList = (props) => {
             name: displayName,
             callback: data => {
                 setStateItems(data.find(x => x.applicationId === applicationId).items);
-
-                // this.setState({
-                //     items: data.find(x => x.applicationId === this.applicationId).items
-                // });
             }
         });
     }
@@ -82,8 +55,6 @@ const TodoList = (props) => {
             return;
         }
 
-        //const { items, reminder } = this.state;
-
         const item = {
             id: createUUID(),
             text: itemText,
@@ -95,11 +66,6 @@ const TodoList = (props) => {
 
         setStateCurrent('');
         setStateReminder('');
-
-        // this.setState({
-        //     current: "",
-        //     reminder: ""
-        // });
     }
 
     const setItem = (item) => {
@@ -139,20 +105,17 @@ const TodoList = (props) => {
     const setReminder = (dateTime, item = null) => {
         if (item === null) {
             setStateReminder(dateTime);
-            // this.setState({
-            //     reminder: dateTime
-            // });
             return;
         }
         item.reminder = dateTime;
         setItem(item);
     }
 
-    //render() {
-    //const { current, reminder, items } = this.state;
+    // const store = React.useContext(Store);
+    // console.log('store :', store);
+    console.log("TodoList render)0")
 
-    const store = React.useContext(Store);
-    console.log('store :', store);
+    const canRemind = props.hasPermission('@plugin_bundle-use-reminder')
 
     return (
         // Use @plugin_bundle_class and the bundle in the manifest will be used as your class
@@ -167,10 +130,14 @@ const TodoList = (props) => {
                 onChange={value => setStateCurrent(value)}
                 onEnter={value => addItem(value)}
             />
-            <DatePickerWithClearButton
-                onChangedValue={value => setReminder(value)}
-                value={reminder}
-            />
+
+            {
+                canRemind && <DatePickerWithClearButton
+                    value={reminder}
+                    onChangedValue={value => setReminder(value)}
+                />
+            }
+
             <GUI.Button
                 text={"Add"}
                 size={"large"}
@@ -193,4 +160,4 @@ const TodoList = (props) => {
     //}
 }
 
-export default TodoList;
+export default (TodoList);
