@@ -20,13 +20,6 @@ const TodoList = (props) => {
 
     console.log('state :', state);
 
-    const setStoreItems = items => {
-        return dispatch({
-            type: 'SET_DATA',
-            payload: items
-        })
-    };
-
     useEffect(() => {
         event.ready("@plugin_bundle-agent", () => {
             getInitialItems();
@@ -38,7 +31,7 @@ const TodoList = (props) => {
                 //     type: 'FETCH_DATA',
                 //     payload: data.items
                 // })
-                setStoreItems(data.items);
+                setStoreItems(dispatch, data.items);
             }
         });
     }, []);
@@ -53,7 +46,7 @@ const TodoList = (props) => {
                 //     type: 'FETCH_DATA',
                 //     payload: data.find(x => x.applicationId === applicationId).items
                 // })
-                setStoreItems(data.find(x => x.applicationId === applicationId).items);
+                setStoreItems(dispatch, data.find(x => x.applicationId === applicationId).items)
             }
         });
     }

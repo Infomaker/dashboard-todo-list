@@ -7,18 +7,14 @@ const initialState = {
     items: []
 }
 
-export const setStoreItems = items => {
-    //const { dispatch } = React.useContext(Store);
-
-    // dispatch({
-    //     type: 'SET_DATA',
-    //     payload: {
-    //         items: items
-    //     }
-    // })
+export const setStoreItems = (dispatch, items) => {
+    dispatch({
+        type: 'SET_DATA',
+        payload: items
+    })
 }
 
-function reducer(state, action) {
+function itemsReducer(state, action) {
     switch (action.type) {
         case 'SET_DATA':
             return { ...state, items: action.payload };
@@ -28,7 +24,7 @@ function reducer(state, action) {
 }
 
 export function StoreProvider(props) {
-    const [state, dispatch] = React.useReducer(reducer, initialState);
+    const [state, dispatch] = React.useReducer(itemsReducer, initialState);
     const value = { state, dispatch };
     return <Store.Provider
         value={value}>{props.children}

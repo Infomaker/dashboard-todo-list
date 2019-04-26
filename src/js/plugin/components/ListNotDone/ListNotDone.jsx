@@ -8,7 +8,7 @@ import { Store } from '../../services/context/store';
 
 const ListNotDone = (props) => {
 
-    const { state, dispatch } = React.useContext(Store);
+    const { state } = React.useContext(Store);
     console.log("Listnotdone", state)
 
     const { items, onItemDone, removeItem, setReminder } = props;
