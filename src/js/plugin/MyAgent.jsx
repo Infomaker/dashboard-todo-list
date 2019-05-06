@@ -11,13 +11,52 @@ export default class MyAgent extends Agent {
         super(props);
 
         this.dataStore = "@plugin_bundle-dataStore";
+        this.LLC_CONTENT_PROVIDER = 'im-internal';
         this.DNA = undefined;
+        this.LCC = undefined;
 
         this.setupEvents();
         this.setupDNA();
+        this.setupLLC();
 
-        this.setInterval(() => this.sendNotifications(), 60000)
-        this.sendNotifications()
+        this.setInterval(() => this.sendNotifications(), 60000);
+        this.sendNotifications();
+
+
+        const searchQuery = {
+            q: "*:*"
+        }
+
+        this.LCC.opencontent(this.LLC_CONTENT_PROVIDER).search(searchQuery).then(searchResult => {
+            console.log({ searchResult });
+        });
+    }
+
+    setupLLC() {
+        const LLC_BUNDLE = 'io.infomaker.lcc';
+        const LLC_LIB = `${LLC_BUNDLE}:LCCLib`;
+        const LLC_LIB_GET = `${LLC_BUNDLE}:getLCCLib`;
+
+        this.ready(LLC_BUNDLE, () => {
+            this.on(LLC_LIB, userData => {
+                let LCC = userData.LCC
+
+                this.LCC = new LCC({
+                    plugin: this,
+                    onLccReadyStateChange: this.onLccReadyStateChange.bind(this)
+                });
+
+                this.LCC.start();
+            });
+
+            this.send(LLC_LIB_GET, { v: 1 });
+        })
+    }
+
+    onLccReadyStateChange(lccReady) {
+        if (lccReady) {
+            // Here you can restore saved queries etc..
+        }
     }
 
     setupDNA() {
@@ -25,7 +64,7 @@ export default class MyAgent extends Agent {
         const DNA_BUNDLE = 'se.infomaker.DNA-Agent';
         const DNA_GET_LIB = `${DNA_BUNDLE}:getDNALib`;
         const DNA_LIB = `${DNA_BUNDLE}:DNALib`;
-        
+
         this.ready(DNA_BUNDLE, () => {
             this.on(DNA_LIB, userData => {
                 let _dna = userData.DNA;
@@ -101,7 +140,7 @@ export default class MyAgent extends Agent {
     }
 
     closeNotification(notificationId) {
-        if (!notificationId) 
+        if (!notificationId)
             return;
         this.DNA.remove({
             uid: notificationId
